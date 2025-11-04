@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+ <!--文字化け防止コード-->
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <!--タブに表示されるタイトルを入力-->
+ <title>LOCAS（ロカス）</title>
+ <!--「Tailwind CSS」というデザインを整える外部ツールの読み込み-->
+ <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4 font-sans">
+ <!--イラストのコンセプト-->
+ <div class="bg-white p-8 sm:p-12 rounded-xl shadow-lg w-full max-w-2xl text-center">
+       
+ <!--見出しと説明文-->
+ <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 mb-4">Loading Check Assistance System（LOCAS）</h1>
+        
+ <!--イラストの詳細-->
+ <div class="w-48 h-48 mx-auto mb-6 text-slate-600">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2">
+  <!-- 飛行機の胴体 -->
+  <path d="M 5,95 C 10,60 20,55 50,55 L 95,55" stroke-width="3" />
+  <rect x="50" y="55" width="45" height="25" fill="#f1f5f9" />
+  <line x1="50" y1="80" x2="95" y2="80" stroke-width="3" />
+  <!--ULDコンテナ-->
+  <rect x="55" y="60" width="20" height="20" fill="#dbeafe" stroke="#60a5fa" />
+  <!--ロック-->
+  <rect x="80" y="77" width="8" height="6" fill="#475569" />
+  <!--作業員-->
+  <g stroke-linecap="round" stroke-linejoin="round">
+   <circle cx="35" cy="70" r="5" fill="#e2e8f0" />
+   <path d="M 35,75 L 35,85 L 30,95" />
+   <path d="M 35,85 L 40,95" />
+   <!--安全ベスト-->
+   <path d="M 30,76 L 40,76 L 37,85 L 33,85 Z" fill="#facc15" stroke-width="1" />
+   <!--指差し-->
+   <path d="M 32,78 L 50,78" stroke-width="1.5" />
+   <!--チェックリスト-->
+   <rect x="15" y="70" width="10" height="12" rx="1" fill="#e2e8f0" />
+   <path d="M 17 74 l 2 2 l 4 -4" stroke="#10b981" stroke-width="1.5" />
+    <!--隠しコマンド、イラストをクリックすると秘密のページに移動-->
+    <a href="tetris.html">Go to Page tetris class="cursor-pointer">
+    <rect x="15" y="70" width="10" height="12" rx="1" fill="#e2e8f0" />
+    <path d="M 17 74 l 2 2 l 4 -4" stroke="#10b981" stroke-width="1.5" />
+    </a>
+   </g>
+  </svg>
+ </div>
+
+ </a>
+  <p class="text-slate-500 mb-8">下のプルダウンから、搭載Ver、レストレインとのチェックができます。</p>
+   <div class="space-y-6">
+   <!--機種選択プルダウン-->
+   <div>
+  <!--label 見出し、for="aircraft-select": このラベルが、id="aircraft-select"という名前を持つ要素（この場合、下の<select>タグ）と関連付いていることを示す。-->
+  <!--class="sr-only 「Screen Reader Only（スクリーンリーダー専用）」を意味。-->   
+  <label for="aircraft-select" class="sr-only">機種を選択</label>
+   <select id="aircraft-select" class="block w-full max-w-xs mx-auto px-4 py-3 bg-white border border-slate-300 rounded-md text-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+    <!--option value=機種 JavaScript用の値、＞○○（例：Aribus A320CEO） プルダウン表示用のテキスト-->
+    <option value="">機種を選択してください</option>
+    <option value="A320CEO">Airbus A320CEO</option>
+    <option value="A320NEO">Airbus A320NEO</option>
+    <option value="A321NEOCEO">Airbus A321NEO/CEO</option>
+    <option value="B767-300">Boeing 767-300（準備中）</option>
+    <option value="B767-300ER">Boeing 767-300ER</option>
+    <option value="B767-300F">Boeing 767-300F（準備中）</option>
+    <option value="B767-300BCF">Boeing 767-300BCF（準備中）</option>
+    <option value="B787-8">Boeing 787-8（準備中）</option>
+    <option value="B787-9">Boeing 787-9（準備中）</option>
+    <option value="B787-10">Boeing 787-10（準備中）</option>
+    <option value="B777-200F200ER-DOM">Boeing 777-200/F/200ER（国内線使用機）（準備中）</option>
+    <option value="B777-200200ER-INT">Boeing 777-200/200ER（国際線使用機）（準備中）</option>
+    <option value="B777-300ER">Boeing 777-300ER（準備中）</option>
+    <option value="B777-300">Boeing 777-300（準備中）</option>
+    <option value="A380">Airbus380</option>
+   </select>
+   
+   </div>
+            
+   <div>
+    <p class="text-slate-500 mb-8">下のプルダウンから、360貨物室画像を閲覧できます。</p>
+     <!--label 見出し、for="aircraft-select": このラベルが、id="aircraft-select"という名前を持つ要素（この場合、下の<select>タグ）と関連付いていることを示す。-->
+     <!--class="sr-only 「Screen Reader Only（スクリーンリーダー専用）」を意味。-->   
+      <label for="other-links-select" class="sr-only">機種を選択</label>
+        <select id="other-links-select" class="block w-full max-w-xs mx-auto px-4 py-3 bg-white border border-slate-300 rounded-md text-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+         <!--option value=リンク JavaScript用の値、＞○○（例：Aribus A320CEO） プルダウン表示用のテキスト-->
+         <option value="">機種を選択してください</option>
+         <option value="https://view.ricohtours.com/754e40d2-9052-42fc-8800-78ac4e06b60d/2f551713-44dd-4bab-be83-89b18a3537ef?type=compact">DHC8-400</option>
+         <option value="https://view.ricohtours.com/7fe6b36e-8b95-4891-b795-1451d1467877/cf7b918e-7f29-4401-8039-84bea7dfc77a?type=compact">B737-800</option>
+         <option value="https://view.ricohtours.com/62052423-3544-4997-884f-e21ae469864a?type=compact">A320</option>
+         <option value="https://view.ricohtours.com/4311c657-1de7-4208-8ee5-ed60e4158413?type=compact">A321</option>
+         <option value="https://view.ricohtours.com/37f460e8-e5cf-49ca-b811-d195b906a347/be6ad8ba-725b-4bda-84db-f05d857fa965?type=compact">B767-300ER</option>
+         <option value="https://view.ricoh360.com/a4fba4eb-e9ef-4afd-8702-c408452da7e6/07a29361-a4e3-4e33-b370-7174e7020091?type=compact">B787-8</option>
+         <option value="https://view.ricohtours.com/6e94d228-60e2-409b-b583-3999bac2393a/aecc97fd-f23f-4bb1-a754-8c9ed188de5e?type=compact">B787-9</option>
+         <option value="https://view.ricoh360.com/1d819c11-7c61-4ed7-a384-5d5804a52c26/8141b70b-d13f-4582-b87a-b7ecf675cadd?type=compact">B787-10</option>
+         <option value="https://view.ricohtours.com/89d2828b-f780-473a-b3c6-0a8b69d2e6c0/c21322a5-c4c6-4f7e-a87f-f70064ded233?type=compact">B777-200</option>
+         <option value="https://view.ricohtours.com/0d4e2715-25d6-4a80-b4d8-2fb887738c59/fcfaf859-3063-45de-afca-33c4dca82cc3?type=compact">B777-200（AFT Large）</option>
+         <option value="https://view.ricoh360.com/3d9b7bab-6517-4e34-969f-cdfbe60f4f0c/01b508ad-ee52-4458-afac-ea0abb4a4ec0?type=compact">B777-300</option>
+         <option value="https://view.ricoh360.com/0c105eed-093a-4bac-9322-11c4b793ea13/e521eb3a-7741-4b44-a1d3-4ac79ee47fbe?type=compact">B777-300ER</option>
+         <option value="https://view.ricoh360.com/d9df19a7-b840-4579-8a6c-5c69224f855b/2b54cba0-f8a1-46da-a0bb-d9e9b7519311?type=compact">A380</option>
+         <option value="https://view.ricoh360.com/8e54b66e-2c25-4011-891b-15c742e7d5ad/bb11ea3e-8408-4acd-8234-b69bff3d7848?type=compact">B767-300F</option>
+         <option value="https://view.ricoh360.com/51e02fb8-4103-4162-919f-08b29b3e107c/6b7313bc-aec8-4c84-b730-ba20fd914f11?type=compact">B767-300BCF</option>
+         <option value="https://view.ricoh360.com/6bb4ede0-8eac-4e35-80ec-59f997da41d8/aca939f1-a9b4-4110-9a30-7a2713087bf7?type=compact">B777F</option>
+        </select>
+   </div>
+
+   </div>
+
+     <div class="mt-10 flex justify-center gap-4">
+      <a href="login.html" class="inline-block bg-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 font-semibold shadow-md transition">
+        管理画面
+      </a>
+      
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfaA_6z7L8ObbphA_m8tjvMOCzyhXq7dBlK2VVjJzPGyRgjFg/viewform?usp=preview" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold shadow-md transition">
+        問合せフォーム
+      </a>
+    </div>
+
+   </div>
+    <script>
+     // 1つ目のプルダウン LOCASを機種選択することによって起動するための処理
+     document.getElementById('aircraft-select').addEventListener('change', function() {
+     const selectedValue = this.value;
+     if (!selectedValue) {
+     return;
+     }
+     const fileName = selectedValue + '_checklist.html';
+    window.location.href = './' + fileName;
+     });
+
+     // 2つ目のプルダウン　360度貨物室を機種選択することによって開くための処理
+     document.getElementById('other-links-select').addEventListener('change', function() {
+     const selectedUrl = this.value;
+     if (!selectedUrl) {
+     return;
+     }
+     
+     // 新しいタブでリンクを開く
+     window.open(selectedUrl, '_blank');
+     });
+    </script>
+
+</body>
+</html>
