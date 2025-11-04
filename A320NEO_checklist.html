@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <!--文字化け防止コード-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--タブに表示されるタイトルを入力-->
+    <title>A320NEO LOCAS</title>
+    <!--「Tailwind CSS」というデザインを整える外部ツールの読み込み-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!--デザインルール（CSS）を記述するエリア-->
+    <style>
+        .lock-item { cursor: pointer; transition: all 0.2s ease-in-out; }
+        .lock-item:hover:not(.disabled) { opacity: 0.8; }
+        .lock-item.disabled { opacity: 0.3; pointer-events: none; cursor: not-allowed; }
+        .action-button {
+            transition: all 0.1s ease-in-out;
+        }
+        .action-button:active {
+            transform: translateY(2px);
+            filter: brightness(0.9);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 p-4 font-sans">
+
+    <!--ページ全体の大きな白い枠組み-->
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-4xl mx-auto">
+        <!--見出しと説明文-->
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-slate-800 mb-2">A320NEO LOCAS</h1>
+        <!--見出しと説明文-->
+        <p class="text-center text-slate-500 mb-6">搭載指示書のテキストを貼り付けてください。チェック項目が自動で設定されます。</p>
+        
+        <!--メッセージを表示する灰色のボックス-->
+        <div class="border border-slate-200 rounded-lg p-3 mb-4 bg-slate-50">
+            <h3 class="text-sm font-medium text-slate-600 mb-1 text-center">メッセージ</h3>
+            <!--JavaScriptによってメッセージの文字が書き換えられる-->
+            <p id="connection-status" class="text-center text-sm text-slate-500">データをロードしてください</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
+            <!--以下は入力箇所の見出し。for=命名、placeholder=例文-->
+            <div><label for="flightName" class="block text-sm font-medium text-slate-700">FLT №</label><input type="text" id="flightName" placeholder="例: NH123" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+            <div><label for="shipNumber" class="block text-sm font-medium text-slate-700">SHIP №</label><input type="text" id="shipNumber" placeholder="例: JA215A" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+            <div><label for="checkDate" class="block text-sm font-medium text-slate-700">DATE</label><input type="date" id="checkDate" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+            <div><label for="lm" class="block text-sm font-medium text-slate-700">LM</label><input type="text" id="lm" placeholder="担当者名" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+        </div>
+        <div class="mb-6">
+             <label for="loadingInstructions" class="block text-sm font-medium text-slate-700">搭載指示書</label>
+             <textarea id="loadingInstructions" rows="6" placeholder="ここに搭載指示書(LIR)のテキストを貼り付け..." class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></textarea>
+             
+             <div class="mt-2">
+                <label for="imageUpload" class="block text-sm font-medium text-slate-700">または、指示書の画像をアップロード</label>
+                <input type="file" id="imageUpload" accept="image/*" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+            </div>
+        </div>
+
+        <div class="w-full overflow-x-auto bg-slate-50 p-4 rounded-lg border">
+            <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" class="min-w-[800px]">
+                <rect x="10" y="50" width="880" height="200" rx="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+                <line x1="10" y1="180" x2="890" y2="180" stroke="#cbd5e1" stroke-width="2" />
+                <g>
+                    <text x="640" y="80" font-family="sans-serif" font-size="16" font-weight="bold" fill="#334155" text-anchor="middle">FWD COMPARTMENT</text>
+                    <rect x="520" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="560" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">13</text><text id="text-13" x="560" y="148" font-family="monospace" font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect x="600" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="640" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">12</text><text id="text-12" x="640" y="148" font-family="monospace" font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect x="680" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="720" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">11</text><text id="text-11" x="720" y="148" font-family="monospace" font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect id="lock-12-13" class="lock-item" data-status="unlocked" x="590" y="132.5" width="20" height="15" rx="2" stroke="#475569" stroke-width="1.5"><title>Lock between 13 & 12</title></rect>
+                    <rect id="lock-11-12" class="lock-item" data-status="unlocked" x="670" y="132.5" width="20" height="15" rx="2" stroke="#475569" stroke-width="1.5"><title>Lock between 12 & 11</title></rect>
+                    <rect id="lock-11-bottom-1" class="lock-item" data-status="unlocked" x="725" y="172.5" width="15" height="12" rx="2" stroke="#475569" stroke-width="1.5"><title>Bottom Lock 1 for 11</title></rect>
+                    <rect id="lock-11-bottom-2" class="lock-item" data-status="unlocked" x="700" y="172.5" width="15" height="12" rx="2" stroke="#475569" stroke-width="1.5"><title>Bottom Lock 2 for 11</title></rect>
+                </g>
+                <g>
+                    <text x="310" y="80" font-family="sans-serif" font-size="16" font-weight="bold" fill="#334155" text-anchor="middle">AFT COMPARTMENT</text>
+                    <rect x="150" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="190" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">42</text><text id="text-42" x="190" y="148" font-family="monospace" font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect x="230" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="270" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">41</text><text id="text-41" x="270" y="148" font-family="monospace" font-size="12" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect x="310" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="350" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">32</text><text id="text-32" x="350" y="148" font-family="monospace" font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect x="390" y="100" width="80" height="80" rx="5" fill="#dbeafe" stroke="#60a5fa" stroke-width="2"/><text x="430" y="125" font-family="sans-serif" font-size="24" font-weight="bold" fill="#1e40af" text-anchor="middle">31</text><text id="text-31" x="430" y="148" font-family="monospace" font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                    <rect id="lock-41-42" class="lock-item" data-status="unlocked" x="220" y="132.5" width="20" height="15" rx="2" stroke="#475569" stroke-width="1.5"><title>Lock between 42 & 41</title></rect>
+                    <rect id="lock-32-41" class="lock-item" data-status="unlocked" x="300" y="132.5" width="20" height="15" rx="2" stroke="#475569" stroke-width="1.5"><title>Lock between 41 & 32</title></rect>
+                    <rect id="lock-31-32" class="lock-item" data-status="unlocked" x="380" y="132.5" width="20" height="15" rx="2" stroke="#475569" stroke-width="1.5"><title>Lock between 32 & 31</title></rect>
+                    <rect id="lock-41-bottom-1" class="lock-item" data-status="unlocked" x="275" y="172.5" width="15" height="12" rx="2" stroke="#475569" stroke-width="1.5"><title>Bottom Lock 1 for 41</title></rect>
+                    <rect id="lock-41-bottom-2" class="lock-item" data-status="unlocked" x="250" y="172.5" width="15" height="12" rx="2" stroke="#475569" stroke-width="1.5"><title>Bottom Lock 2 for 41</title></rect>
+                </g>
+                <g>
+                    <rect x="40" y="100" width="100" height="80" rx="5" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/><text x="90" y="145" font-family="sans-serif" font-size="24" font-weight="bold" fill="#475569" text-anchor="middle">BULK</text>
+                </g>
+            </svg>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button id="cameraBtn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-semibold shadow-md w-full sm:w-auto action-button">カメラ起動</button>
+            <button id="openDriveBtn" class="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 font-semibold shadow-md w-full sm:w-auto action-button">フォルダ格納</button>
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        </div>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-t pt-4">
+            <div><label for="aftLoadingStaff" class="block text-sm font-medium text-slate-700">AFT LOADING</label><input type="text" id="aftLoadingStaff" placeholder="担当者" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+            <div><label for="aftWcStaff" class="block text-sm font-medium text-slate-700">W C'k (AFT)</label><input type="text" id="aftWcStaff" placeholder="担当者" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+            <div><label for="fwdLoadingStaff" class="block text-sm font-medium text-slate-700">FWD LOADING</label><input type="text" id="fwdLoadingStaff" placeholder="担当者" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+            <div><label for="fwdWcStaff" class="block text-sm font-medium text-slate-700">W C'k (FWD)</label><input type="text" id="fwdWcStaff" placeholder="担当者" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></div>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button id="refreshBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold shadow-md w-full sm:w-auto action-button">Refresh</button>
+            <button id="updateBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-semibold shadow-md w-full sm:w-auto action-button">UP date</button>
+        </div>
+    </div>
+    
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    
+    <script>
+        // 写真を格納する親フォルダのURL。親フォルダのURLを張り付け。
+        const DRIVE_PARENT_FOLDER_URL = 'https://drive.google.com/drive/folders/12KADv8XGXKpzPQ6kgmAaE7yrWdW6-aTo?usp=drive_link'; 
+        
+        //スプレッドシートをサーバー化したデプロイのウェブアプリのURL。ウェブアプリのURLを張り付け。
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby-SXqmRTakyEbRrxTTVriqDSbLna0PwCkeOP9ZOv-leon7M7PEeHsvo_o1yTLknwuM/exec'; 
+        //ロック未実施時の色、シアン青色
+        const UNLOCKED_COLOR = '#334155';
+        //ロック実施時の色
+        const LOCKED_COLOR = '#2563eb';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const allInputs = document.querySelectorAll('input, textarea');
+            allInputs.forEach(input => input.addEventListener('input', () => { document.getElementById('connection-status').textContent = '未保存の変更があります'; }));
+            document.querySelectorAll('#flightName, #checkDate').forEach(input => input.addEventListener('change', loadData));
+            document.getElementById('loadingInstructions').addEventListener('input', () => {
+                extractInfoFromInstructions();
+                parseInstructionsAndApplyPattern();
+            });
+            document.querySelectorAll('.lock-item').forEach(lock => lock.addEventListener('click', () => toggleLockState(lock)));
+            document.getElementById('refreshBtn').addEventListener('click', loadData);
+            document.getElementById('updateBtn').addEventListener('click', saveState);
+
+            // ORC構成文
+document.getElementById('imageUpload').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) { return; }
+
+    const statusElement = document.getElementById('connection-status');
+    statusElement.textContent = '画像を解析中... (初回は時間がかかります)';
+
+    // 1. 働き手（worker）を準備
+    const worker = await Tesseract.createWorker('eng');
+
+    try {
+        // 2. 準備したworkerに文字認識を命令
+        const { data: { text } } = await worker.recognize(file);
+        
+        // 認識したテキストをテキストエリアに設定
+        document.getElementById('loadingInstructions').value = text;
+
+        // 既存の解析・描画処理を呼び出す
+        extractInfoFromInstructions();
+        parseInstructionsAndApplyPattern();
+        
+        statusElement.textContent = '画像からの読み取りが完了しました';
+
+    } catch (error) {
+        console.error('OCR処理中にエラーが発生しました:', error);
+        statusElement.textContent = '画像解析に失敗しました';
+    } finally {
+        // 3. 使い終わったworkerを終了させる（メモリ解放）
+        await worker.terminate();
+    }
+});
+
+            document.getElementById('cameraBtn').addEventListener('click', () => {
+                document.getElementById('cameraInput').click();
+            });
+
+            document.getElementById('openDriveBtn').addEventListener('click', () => {
+                const flightName = document.getElementById('flightName').value.trim();
+                const checkDate = document.getElementById('checkDate').value;
+
+                if (!flightName || !checkDate) {
+                    alert('日付と便名を入力してください');
+                    return;
+                }
+
+                if (DRIVE_PARENT_FOLDER_URL.includes('XXXXXXXXXXXXXXXXXXXX') || !DRIVE_PARENT_FOLDER_URL.startsWith('https://drive.google.com')) {
+                    alert('有効なGoogle Driveの親フォルダURLをHTMLコード内に設定してください。');
+                    return;
+                }
+                
+                window.open(DRIVE_PARENT_FOLDER_URL, '_blank');
+                alert(`親フォルダを新しいタブで開きました。\n\n「${checkDate}」フォルダの中にある「${flightName}」フォルダに写真を格納してください。\n\n該当フォルダがない場合は、Google Drive上で作成してください。`);
+            });
+
+            if (!document.getElementById('checkDate').value) {
+                document.getElementById('checkDate').valueAsDate = new Date();
+            }
+            loadData();
+        });
+
+        function getDocumentId() {
+            const flightName = document.getElementById('flightName').value.trim().toUpperCase() || 'NO_FLIGHT';
+            const dateValue = document.getElementById('checkDate').value || new Date().toISOString().slice(0, 10);
+            return `${dateValue}_${flightName}`;
+        }
+        
+        async function loadData() {
+            if (WEB_APP_URL === 'YOUR_WEB_APP_URL_HERE' || !WEB_APP_URL.startsWith('https')) {
+                document.getElementById('connection-status').textContent = 'ウェブアプリのURLを設定してください'; return;
+            }
+            document.getElementById('connection-status').textContent = 'データをロード中...';
+            try {
+                const response = await fetch(`${WEB_APP_URL}?docId=${getDocumentId()}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                if (data && Object.keys(data).length > 0) {
+                   updateUI(data);
+                } else {
+                   resetUI();
+                }
+                document.getElementById('connection-status').textContent = 'サーバーと同期済み';
+            } catch (error) {
+                console.error('データの読み込みに失敗:', error);
+                document.getElementById('connection-status').textContent = 'サーバー接続エラー (Apps Script設定を確認)';
+            }
+        }
+        
+        async function saveState() {
+             if (WEB_APP_URL === 'YOUR_WEB_APP_URL_HERE' || !WEB_APP_URL.startsWith('https')) return;
+             document.getElementById('connection-status').textContent = 'サーバーへ保存中...';
+             const locks = document.querySelectorAll('.lock-item');
+             const lockStates = {};
+             locks.forEach(lock => lockStates[lock.id] = lock.dataset.status);
+             const stateToSave = {
+                shipNumber: document.getElementById('shipNumber').value, lm: document.getElementById('lm').value,
+                fwdLoadingStaff: document.getElementById('fwdLoadingStaff').value, fwdWcStaff: document.getElementById('fwdWcStaff').value,
+                aftLoadingStaff: document.getElementById('aftLoadingStaff').value, aftWcStaff: document.getElementById('aftWcStaff').value,
+                loadingInstructions: document.getElementById('loadingInstructions').value, locks: lockStates
+             };
+             try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ docId: getDocumentId(), state: stateToSave })
+                });
+                document.getElementById('connection-status').textContent = '保存完了';
+            } catch (error) {
+                console.error('データの保存に失敗:', error);
+                document.getElementById('connection-status').textContent = '保存エラー';
+            }
+        }
+        
+        function updateUI(data) {
+            ['shipNumber', 'lm', 'fwdLoadingStaff', 'fwdWcStaff', 'aftLoadingStaff', 'aftWcStaff', 'loadingInstructions'].forEach(id => document.getElementById(id).value = data[id] || '');
+            parseInstructionsAndApplyPattern();
+            if (data.locks) {
+                for (const lockId in data.locks) {
+                    const lockElement = document.getElementById(lockId);
+                    if (lockElement && !lockElement.classList.contains('disabled')) {
+                        setLockState(lockElement, data.locks[lockId]);
+                    }
+                }
+            }
+        }
+        
+        function resetUI() {
+            ['shipNumber', 'lm', 'fwdLoadingStaff', 'fwdWcStaff', 'aftLoadingStaff', 'aftWcStaff', 'loadingInstructions'].forEach(id => document.getElementById(id).value = '');
+            parseInstructionsAndApplyPattern();
+        }
+
+        function toggleLockState(lockElement) {
+            if (lockElement.classList.contains('disabled')) return;
+            const newStatus = lockElement.dataset.status === 'unlocked' ? 'locked' : 'unlocked';
+            setLockState(lockElement, newStatus);
+            document.getElementById('connection-status').textContent = '未保存の変更があります';
+        }
+        
+        function extractInfoFromInstructions() {
+            const text = document.getElementById('loadingInstructions').value;
+            const fltMatch = text.match(/NH[^\/]+/);
+            if (fltMatch) document.getElementById('flightName').value = fltMatch[0];
+            const shipMatch = text.match(/JA[^\.]+/);
+            if (shipMatch) document.getElementById('shipNumber').value = shipMatch[0];
+        }
+
+        function applyTextToSVG(textElement, content) {
+            textElement.textContent = ''; // Clear previous tspans
+            const x = textElement.getAttribute('x');
+            const lineHeight = 12; // in pixels
+            const maxCharsPerLine = 10;
+            let lines = [];
+            for (let i = 0; i < content.length; i += maxCharsPerLine) {
+                lines.push(content.substring(i, i + maxCharsPerLine));
+            }
+            lines.forEach((line, index) => {
+                const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                tspan.setAttribute('x', x);
+                tspan.setAttribute('dy', index === 0 ? '0' : `${lineHeight}px`);
+                tspan.textContent = line;
+                textElement.appendChild(tspan);
+            });
+        }
+        
+        function parseInstructionsAndApplyPattern() {
+            const text = document.getElementById('loadingInstructions').value;
+            const allLocks = document.querySelectorAll('.lock-item');
+            const lines = text.split('\n');
+            const loadedPositions = new Map();
+            const positions = ['11', '12', '13', '31', '32', '41', '42'];
+            positions.forEach(pos => { const el = document.getElementById(`text-${pos}`); if (el) el.textContent = ''; });
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim().toUpperCase();
+                for (const pos of positions) {
+                    if (trimmedLine.startsWith(`-${pos}`) && !trimmedLine.endsWith('/N')) {
+                        const content = trimmedLine.substring(pos.length + 1).replace(/\/\/$/, '');
+                        loadedPositions.set(pos, content);
+                        const el = document.getElementById(`text-${pos}`);
+                        if (el) applyTextToSVG(el, content);
+                        break;
+                    }
+                }
+            });
+
+            const fwdLoaded = loadedPositions.has('11') || loadedPositions.has('12') || loadedPositions.has('13');
+            const aftLoaded = loadedPositions.has('31') || loadedPositions.has('32') || loadedPositions.has('41') || loadedPositions.has('42');
+            let activeLocks = new Set(['lock-11-bottom-1', 'lock-11-bottom-2', 'lock-41-bottom-1', 'lock-41-bottom-2']);
+            if (fwdLoaded) { activeLocks.add('lock-12-13'); activeLocks.add('lock-11-12'); }
+            if (aftLoaded) { activeLocks.add('lock-31-32'); activeLocks.add('lock-32-41'); activeLocks.add('lock-41-42'); }
+
+            allLocks.forEach(lock => {
+                if (activeLocks.has(lock.id)) {
+                    lock.classList.remove('disabled');
+                } else {
+                    lock.classList.add('disabled');
+                    setLockState(lock, 'unlocked');
+                }
+            });
+        }
+        
+        function setLockState(lockElement, state) {
+            lockElement.dataset.status = state;
+            lockElement.setAttribute('fill', state === 'locked' ? LOCKED_COLOR : UNLOCKED_COLOR);
+        }
+
+        // copyStateToClipboard is removed
+    </script>
+
+</body>
+</html>
+
