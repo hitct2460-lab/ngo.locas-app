@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+ <!--文字化け防止コード-->
+ <meta charset="UTF-8">
+ <!--タブに表示されるタイトルを入力-->
+ <title>ログイン</title>
+
+  <style>
+    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+    .login-container { background: white; padding: 2em; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
+    input { width: 100%; padding: 0.8em; margin-bottom: 1em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 0.8em; border: none; background-color: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+  </style>
+</head>
+
+<body>
+ <!--イラストのコンセプト-->
+ <div class="login-container">
+ 
+ <!--見出しと説明文-->
+ <h2>ログイン</h2>
+  <div id="login-form">
+   <div>
+    <input type="text" id="username" placeholder="ユーザー名" required>
+   </div>
+    <div>
+     <input type="password" id="password" placeholder="パスワード" required>
+      </div>
+       <button onclick="checkLogin()">ログイン</button>
+     </div>
+ </div>
+
+<script>
+//ここからJavaScript
+ function checkLogin() {
+  //ここに正しいIDとパスワードを設定
+  //設定したいID
+  const correctId = "locas777";
+  //設定したいパスワード
+  const correctPw = "19891011";
+  //ログイン成功時に移動するアドレスを設定
+  const destinationUrl = "https://drive.google.com/drive/folders/16zfggJznLiH_scqs5fMq2CTEVBytsCb5?usp=sharing";
+        
+  // 入力フォームから値を取得
+  const inputId = document.getElementById("username").value;
+  const inputPw = document.getElementById("password").value;
+ 
+   // IDとパスワードが両方一致するかチェック
+   if (inputId === correctId && inputPw === correctPw) {
+   // 一致した場合、指定したアドレスに移動
+   alert("ログインに成功しました！");
+    window.location.href = destinationUrl;
+     } else {
+     // 一致しなかった場合、エラーメッセージを表示
+     alert("ユーザー名またはパスワードが間違っています。");
+     }
+   }
+</script>
+
+</body>
+</html>
