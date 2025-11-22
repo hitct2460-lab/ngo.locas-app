@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <!--文字化け防止コード-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--タブに表示されるタイトルを入力-->
+    <title>B787-8 LOCAS</title>
+    <!--「Tailwind CSS」というデザインを整える外部ツールの読み込み-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!--デザインルール（CSS）を記述するエリア-->
+    <style>
+        .lock-item {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .lock-item:hover:not(.disabled) {
+            opacity: 0.8;
+        }
+
+        .lock-item.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .action-button {
+            transition: all 0.1s ease-in-out;
+        }
+
+        .action-button:active {
+            transform: translateY(2px);
+            filter: brightness(0.9);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 p-4 font-sans">
+    <!--ページ全体の大きな白い枠組み-->
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-6xl mx-auto">
+        <!--見出しと説明文-->
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-slate-800 mb-2">B787-8 LOCAS</h1>
+        <!--見出しと説明文-->
+        <p class="text-center text-slate-500 mb-6">搭載指示書のテキストを貼り付けるか、画像をアップロードしてください。</p>
+        <!--メッセージを表示する灰色のボックス-->
+        <div class="border border-slate-200 rounded-lg p-3 mb-4 bg-slate-50">
+            <h3 class="text-sm font-medium text-slate-600 mb-1 text-center">メッセージ</h3>
+            <!--JavaScriptによってメッセージの文字が書き換えられる-->
+            <p id="connection-status" class="text-center text-sm text-slate-500">データをロードしてください</p>
+        </div>
+ 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
+            <!--以下は入力箇所の見出し。for=命名、placeholder=例文-->
+            <div>
+                <label for="flightName" class="block text-sm font-medium text-slate-700">FLT №</label><input type="text" id="flightName" placeholder="例: NH123" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+            <div><label for="shipNumber" class="block text-sm font-medium text-slate-700">SHIP №</label><input
+                    type="text" id="shipNumber" placeholder="例: JA614A"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+            <div><label for="checkDate" class="block text-sm font-medium text-slate-700">DATE</label><input type="date"
+                    id="checkDate"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+            <div><label for="lm" class="block text-sm font-medium text-slate-700">LM</label><input type="text" id="lm"
+                    placeholder="担当者名"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label for="loadingInstructions" class="block text-sm font-medium text-slate-700">搭載指示書</label>
+            <textarea id="loadingInstructions" rows="6" placeholder="ここに搭載指示書(LIR)のテキストを貼り付け..."
+                class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"></textarea>
+            <div class="mt-2">
+                <label for="imageUpload" class="block text-sm font-medium text-slate-700">または、指示書の画像をアップロード</label>
+                <input type="file" id="imageUpload" accept="image/*"
+                    class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+            </div>
+        </div>
+
+        <div class="w-full overflow-x-auto bg-slate-50 p-4 rounded-lg border">
+            <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" class="min-w-[1100px]">
+                <rect x="10" y="25" width="1180" height="278" rx="20" fill="#f8fafc" stroke="#cbd5e1"
+                    stroke-width="2" />
+                <line x1="10" y1="254" x2="1190" y2="254" stroke="#cbd5e1" stroke-width="2" />
+                <rect x="10" y="330" width="1180" height="265" rx="20" fill="#f8fafc" stroke="#cbd5e1"
+                    stroke-width="2" />
+                <line x1="10" y1="563" x2="1180" y2="563" stroke="#cbd5e1" stroke-width="2" />
+
+
+                <g>
+                    <g transform="translate(0, -40)">
+                        <text x="600" y="57" font-family="sans-serif" font-size="16" font-weight="bold" fill="#334155"
+                            text-anchor="middle">FWD COMPARTMENT</text>
+
+                        <!--以下FWD POS　L側-->
+                        <g id="pos-24L">
+                            <rect x="90" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="150" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">24L</text><text id="text-24L" x="150" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-23L">
+                            <rect x="210" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="270" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">23L</text><text id="text-23L" x="270" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-22L">
+                            <rect x="330" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="395" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">22L</text><text id="text-22L" x="395" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-21L">
+                            <rect x="450" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="510" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">21L</text><text id="text-21L" x="510" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-14L">
+                            <rect x="570" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="630" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">14L</text><text id="text-14L" x="630" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-13L">
+                            <rect x="690" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="750" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">13L</text><text id="text-13L" x="750" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-12L">
+                            <rect x="810" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="870" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">12L</text><text id="text-12L" x="870" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-11L">
+                            <rect x="930" y="95" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="990" y="145" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">11L</text><text id="text-11L" x="990" y="75"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+
+                        <!--以下FWD POS　R側-->
+                        <g id="pos-24R">
+                            <rect x="90" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="150" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">24R</text><text id="text-24R" x="150" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-23R">
+                            <rect x="210" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="270" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">23R</text><text id="text-23R" x="270" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-22R">
+                            <rect x="330" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="395" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">22R</text><text id="text-22R" x="395" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-21R">
+                            <rect x="450" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="510" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">21R</text><text id="text-21R" x="510" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-14R">
+                            <rect x="570" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="630" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">14R</text><text id="text-14R" x="630" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-13R">
+                            <rect x="690" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="750" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">13R</text><text id="text-13R" x="750" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-12R">
+                            <rect x="810" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="870" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">12R</text><text id="text-12R" x="870" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-11R">
+                            <rect x="930" y="195" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="990" y="255" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">11R</text><text id="text-11R" x="990" y="320"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+
+                        <!--21LRの特別枠（21LRの搭載がない場合の表示用）-->
+                        <g id="specialFramesFwd">
+            <rect id="specialFrame-21L" x="468" y="95" width="100" height="100" rx="5" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="5 5" style="display:none;"/>
+            <rect id="specialFrame-21R" x="468" y="195" width="100" height="100" rx="5" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="5 5" style="display:none;"/>
+        </g>
+
+                        <!--以下FWD PLT POS-->
+                        <g id="pallet-22P" display="none">
+                            <rect x="90" y="95" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <text x="170" y="145" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">22P</text>
+                            <text id="text-22P" x="170" y="320" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-21P" display="none">
+                            <rect x="330" y="95" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <rect id="pallet-21P-inner" x="310" y="100" width="230" height="190" rx="3" fill="none"
+                                stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 2" display="none" />
+                            <text x="358" y="145" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">21P</text>
+                            <text id="text-21P" x="358" y="320" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-13P" display="none">
+                            <rect x="570" y="95" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <rect id="pallet-13P-inner" x="550" y="100" width="230" height="190" rx="3" fill="none"
+                                stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 2" display="none" />
+                            <text x="540" y="145" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">13P</text>
+                            <text id="text-13P" x="540" y="320" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-12P" display="none">
+                            <rect x="570" y="95" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <text x="755" y="145" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">12P</text>
+                            <text id="text-12P" x="755" y="320" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-11P" display="none">
+                            <rect x="810" y="95" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <text x="970" y="145" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">11P</text>
+                            <text id="text-11P" x="970" y="320" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+
+                        <!--以下LD-4横積みの枠-->
+                        <g id="qSizeFrams">
+                            <rect id="qSizeFrame-24" x="95" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-23" x="215" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-22" x="335" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-21" x="455" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-14" x="575" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-13" x="695" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-12" x="815" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="qSizeFrame-11" x="935" y="100" width="110" height="150" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                        </g>
+
+                        <!--以下LD-4縦積みの枠-->
+                        <g id="dqpFramesFwd">
+                            <rect id="dqpFrame-22P-L" x="95" y="100" width="170" height="90" rx="5" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-22P-R" x="95" y="200" width="170" height="90" rx="5" fill="none"
+                                stroke="#2563eb" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-21P-L" x="266" y="100" width="200" height="90" rx="5" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-21P-R" x="266" y="200" width="200" height="90" rx="5" fill="none"
+                                stroke="#2563eb" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-13P-L" x="467" y="100" width="160" height="90" rx="5" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-13P-R" x="467" y="200" width="160" height="90" rx="5" fill="none"
+                                stroke="#2563eb" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-12P-L" x="645" y="100" width="210" height="90" rx="5" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-12P-R" x="645" y="200" width="210" height="90" rx="5" fill="none"
+                                stroke="#2563eb" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-11P-L" x="872" y="100" width="175" height="90" rx="5" fill="none"
+                                stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                            <rect id="dqpFrame-11P-R" x="872" y="200" width="175" height="90" rx="5" fill="none"
+                                stroke="#2563eb" stroke-width="2" stroke-dasharray="5 5" style="display:none;" />
+                        </g>
+
+                        <!--以下CONTロック-->
+                        <rect id="lock-23L-24L-1" class="lock-item" data-status="unlocked" x="202" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>"lock-23L-24L-1</title>
+                        </rect>
+                        <rect id="lock-23L-24L-2" class="lock-item" data-status="unlocked" x="202" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-24L-2</title>
+                        </rect>
+                        <rect id="lock-23R-24R-3" class="lock-item" data-status="unlocked" x="202" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-24R-3</title>
+                        </rect>
+                        <rect id="lock-23R-24R-4" class="lock-item" data-status="unlocked" x="202" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-24R-4</title>
+                        </rect>
+                        <rect id="lock-22L-23L-1" class="lock-item" data-status="unlocked" x="322" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-22L-23L-1</title>
+                        </rect>
+                        <rect id="lock-22L-23L-2" class="lock-item" data-status="unlocked" x="322" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-22L-23L-2</title>
+                        </rect>
+                        <rect id="lock-22R-23R-3" class="lock-item" data-status="unlocked" x="322" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-22R-23R-3</title>
+                        </rect>
+                        <rect id="lock-22R-23R-4" class="lock-item" data-status="unlocked" x="322" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-22R-23R-4</title>
+                        </rect>
+                        <rect id="lock-21L-22L-1" class="lock-item" data-status="unlocked" x="442" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-21L-22L-1</title>
+                        </rect>
+                        <rect id="lock-21L-22L-2" class="lock-item" data-status="unlocked" x="442" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-21L-22L-2</title>
+                        </rect>
+                        <rect id="lock-21R-22R-3" class="lock-item" data-status="unlocked" x="442" y="195" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-21R-22R-3</title>
+                        </rect>
+                        <rect id="lock-21R-22R-4" class="lock-item" data-status="unlocked" x="442" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-21R-22R-4</title>
+                        </rect>
+                        <rect id="lock-21R-22R-5" class="lock-item" data-status="unlocked" x="442" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-21R-22R-5</title>
+                        </rect>
+                        <rect id="lock-14L-21L-1" class="lock-item" data-status="unlocked" x="562" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-21L-1</title>
+                        </rect>
+                        <rect id="lock-14L-21L-2" class="lock-item" data-status="unlocked" x="562" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-21L-2</title>
+                        </rect>
+                        <rect id="lock-14R-21R-3" class="lock-item" data-status="unlocked" x="562" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-21R-3</title>
+                        </rect>
+                        <rect id="lock-14R-21R-4" class="lock-item" data-status="unlocked" x="562" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-21R-4</title>
+                        </rect>
+                        <rect id="lock-13L-14L-1" class="lock-item" data-status="unlocked" x="682" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13L-14L-1</title>
+                        </rect>
+                        <rect id="lock-13L-14L-2" class="lock-item" data-status="unlocked" x="682" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13L-14L-2</title>
+                        </rect>
+                        <rect id="lock-13L-14L-3" class="lock-item" data-status="unlocked" x="682" y="160" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13L-14L-3</title>
+                        </rect>
+                        <rect id="lock-13R-14R-4" class="lock-item" data-status="unlocked" x="682" y="210" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13R-14R-4</title>
+                        </rect>
+                        <rect id="lock-13R-14R-5" class="lock-item" data-status="unlocked" x="682" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13R-14R-5</title>
+                        </rect>
+                        <rect id="lock-13R-14L-6" class="lock-item" data-status="unlocked" x="682" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13R-14L-6</title>
+                        </rect>
+                        <rect id="lock-12L-13L-1" class="lock-item" data-status="unlocked" x="802" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12L-13L-1</title>
+                        </rect>
+                        <rect id="lock-12L-13L-2" class="lock-item" data-status="unlocked" x="802" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12L-13L-2</title>
+                        </rect>
+                        <rect id="lock-12L-13L-3" class="lock-item" data-status="unlocked" x="802" y="160" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12L-13L-3</title>
+                        </rect>
+                        <rect id="lock-12R-13R-4" class="lock-item" data-status="unlocked" x="802" y="210" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12R-13R-4</title>
+                        </rect>
+                        <rect id="lock-12R-13R-5" class="lock-item" data-status="unlocked" x="802" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12R-13R-5</title>
+                        </rect>
+                        <rect id="lock-12R-13R-6" class="lock-item" data-status="unlocked" x="802" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12R-13R-6</title>
+                        </rect>
+                        <rect id="lock-11L-12L-1" class="lock-item" data-status="unlocked" x="923" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-11L-12L-1</title>
+                        </rect>
+                        <rect id="lock-11L-12L-2" class="lock-item" data-status="unlocked" x="923" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-11L-12L-2</title>
+                        </rect>
+                        <rect id="lock-11R-12R-3" class="lock-item" data-status="unlocked" x="923" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-11R-12R-3</title>
+                        </rect>
+                        <rect id="lock-11R-12R-4" class="lock-item" data-status="unlocked" x="923" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-11R-12R-4</title>
+                        </rect>
+
+                        <!--以下CENTERロック-->
+                        <circle id="lock-13C-1-1" class="lock-item" data-status="unlocked" cx="698" cy="195" r="8"
+                            stroke-width="1.5">
+                            <title>lock-13C-1-1</title>
+                        </circle>
+                        <rect id="lock-13C-1-2" class="lock-item" data-status="unlocked" x="720" y="188" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13C-1-2</title>
+                        </rect>
+                        <circle id="lock-13C-2-1" class="lock-item" data-status="unlocked" cx="755" cy="195" r="8"
+                            stroke-width="1.5">
+                            <title>lock-13C-2-1</title>
+                        </circle>
+                        <rect id="lock-13C-2-2" class="lock-item" data-status="unlocked" x="775" y="188" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13C-2-2</title>
+                        </rect>
+                        <circle id="lock-13C-3-1" class="lock-item" data-status="unlocked" cx="835" cy="195" r="8"
+                            stroke-width="1.5">
+                            <title>lock-13C-3-1</title>
+                        </circle>
+                        <rect id="lock-13C-3-2" class="lock-item" data-status="unlocked" x="810" y="188" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13C-3-2</title>
+                        </rect>
+
+                        <!--以下AUXロック-->
+                        <path id="lock-13R-AUX-1-1" class="lock-item" data-status="unlocked"
+                            d="M 655 260 L 655 270 L 667 260 Z" stroke-width="1.5">
+                            <title>lock-13R-AUX-1-1</title>
+                        </path>
+                        <path id="lock-13R-AUX-2-1" class="lock-item" data-status="unlocked"
+                            d="M 740 260 L 740 270 L 752 260 Z" stroke-width="1.5">
+                            <title>lock-13R-AUX-2-1</title>
+                        </path>
+                        <rect id="lock-13R-AUX-2-2" class="lock-item" data-status="unlocked" x="705" y="250" width="7"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13R-AUX-2-2</title>
+                        </rect>
+                        <path id="lock-13R-AUX-3-1" class="lock-item" data-status="unlocked"
+                            d="M 787 260 L 775 260 L 787 270 Z" stroke-width="1.5">
+                            <title>lock-13R-AUX-3-1</title>
+                        </path>
+                        <rect id="lock-13R-AUX-3-2" class="lock-item" data-status="unlocked" x="791" y="250" width="7"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-13R-AUX-3-2</title>
+                        </rect>
+                        <path id="lock-13R-AUX-4-1" class="lock-item" data-status="unlocked"
+                            d="M 840 260 L 828 260 L 840 270 Z" stroke-width="1.5">
+                            <title>lock-13R-AUX-4-1</title>
+                        </path>
+
+                        <!--以下FWD Door Sideロック-->
+                        <rect id="lock-13R-bottom-1-1" class="lock-item" data-status="unlocked" x="665" y="290"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-1-1L</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-1-2" class="lock-item" data-status="unlocked" x="678" y="295"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-1-2</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-2-1" class="lock-item" data-status="unlocked" x="715" y="288"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-2-1</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-2-2" class="lock-item" data-status="unlocked" x="728" y="295"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-2-2</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-3-1" class="lock-item" data-status="unlocked" x="765" y="288"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-3-1</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-3-2" class="lock-item" data-status="unlocked" x="778" y="295"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-3-2</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-4-1" class="lock-item" data-status="unlocked" x="810" y="288"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-4-1</title>
+                        </rect>
+                        <rect id="lock-13R-bottom-4-2" class="lock-item" data-status="unlocked" x="822" y="295"
+                            width="10" height="12" rx="2" stroke-width="1.5">
+                            <title>lock-13R-bottom-4-2</title>
+                        </rect>
+
+                        <!--以下PLTロック-->
+                        <!--22P「...●-1」：88ロック、「...●-2」：96ロック-->
+                        <rect id="lock-23L-PLT-1-1" class="lock-item" data-status="unlocked" x="240" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-PLT-1-1</title>
+                        </rect>
+                        <rect id="lock-23L-PLT-2-1" class="lock-item" data-status="unlocked" x="240" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-PLT-2-1</title>
+                        </rect>
+                        <rect id="lock-23R-PLT-3-1" class="lock-item" data-status="unlocked" x="240" y="195" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-PLT-3-1</title>
+                        </rect>
+                        <rect id="lock-23R-PLT-4-1" class="lock-item" data-status="unlocked" x="240" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-PLT-4-1</title>
+                        </rect>
+                        <rect id="lock-23R-PLT-5-1" class="lock-item" data-status="unlocked" x="240" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-PLT-5-1</title>
+                        </rect>
+                        <rect id="lock-23L-PLT-1-2" class="lock-item" data-status="unlocked" x="260" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-PLT-1-2</title>
+                        </rect>
+                        <rect id="lock-23L-PLT-2-2" class="lock-item" data-status="unlocked" x="260" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-PLT-2-2</title>
+                        </rect>
+                        <rect id="lock-23R-PLT-3-2" class="lock-item" data-status="unlocked" x="260" y="195" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-PLT-3-2</title>
+                        </rect>
+                        <rect id="lock-23R-PLT-4-2" class="lock-item" data-status="unlocked" x="260" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-PLT-4-2</title>
+                        </rect>
+                        <rect id="lock-23R-PLT-5-2" class="lock-item" data-status="unlocked" x="260" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-PLT-5-2</title>
+                        </rect>
+                        <!--21P-->
+                        <rect id="lock-23L-21PLT-1" class="lock-item" data-status="unlocked" x="460" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-21PLT-1</title>
+                        </rect>
+                        <rect id="lock-23L-21PLT-2" class="lock-item" data-status="unlocked" x="460" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23L-21PLT-2</title>
+                        </rect>
+                        <rect id="lock-23R-21PLT-3" class="lock-item" data-status="unlocked" x="460" y="195" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-21PLT-3</title>
+                        </rect>
+                        <rect id="lock-23R-21PLT-4" class="lock-item" data-status="unlocked" x="460" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-21PLT-4</title>
+                        </rect>
+                        <rect id="lock-23R-21PLT-5" class="lock-item" data-status="unlocked" x="460" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-23R-21PLT-5</title>
+                        </rect>
+                        <!--13P「...●-1」：88ロック、「...●-2」：96ロック-->
+                        <rect id="lock-14L-13PLT-1-1" class="lock-item" data-status="unlocked" x="600" y="115"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-13PLT-1-1</title>
+                        </rect>
+                        <rect id="lock-14L-13PLT-2-1" class="lock-item" data-status="unlocked" x="600" y="140"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-13PLT-2-1</title>
+                        </rect>
+                        <rect id="lock-14R-13PLT-3-1" class="lock-item" data-status="unlocked" x="600" y="195"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-13PLT-3-1</title>
+                        </rect>
+                        <rect id="lock-14R-13PLT-4-1" class="lock-item" data-status="unlocked" x="600" y="230"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>Llock-14R-13PLT-4-1</title>
+                        </rect>
+                        <rect id="lock-14R-13PLT-5-1" class="lock-item" data-status="unlocked" x="600" y="255"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-13PLT-5-1</title>
+                        </rect>
+                        <rect id="lock-14L-13PLT-1-2" class="lock-item" data-status="unlocked" x="620" y="115"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-13PLT-1-2</title>
+                        </rect>
+                        <rect id="lock-14L-13PLT-2-2" class="lock-item" data-status="unlocked" x="620" y="140"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-13PLT-2-2</title>
+                        </rect>
+                        <rect id="lock-14R-13PLT-3-2" class="lock-item" data-status="unlocked" x="620" y="195"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-13PLT-3-2</title>
+                        </rect>
+                        <rect id="lock-14R-13PLT-4-2" class="lock-item" data-status="unlocked" x="620" y="230"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-13PLT-4-2</title>
+                        </rect>
+                        <rect id="lock-14R-13PLT-5-2" class="lock-item" data-status="unlocked" x="620" y="255"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-13PLT-5-2</title>
+                        </rect>
+                        <!--12PのAFT側「...●-1」：96ロック、「...●-2」：88ロック-->
+                        <rect id="lock-14L-12PLT-1-1" class="lock-item" data-status="unlocked" x="640" y="100"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-12PLT-1-1</title>
+                        </rect>
+                        <rect id="lock-14L-12PLT-2-1" class="lock-item" data-status="unlocked" x="640" y="160"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-12PLT-2-1</title>
+                        </rect>
+                        <rect id="lock-14R-12PLT-3-1" class="lock-item" data-status="unlocked" x="640" y="212"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-12PLT-3-1</title>
+                        </rect>
+                        <rect id="lock-14R-12PLT-4-1" class="lock-item" data-status="unlocked" x="640" y="242"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-12PLT-4-1</title>
+                        </rect>
+                        <rect id="lock-14R-12PLT-5-1" class="lock-item" data-status="unlocked" x="640" y="272"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-12PLT-5-1</title>
+                        </rect>
+                        <rect id="lock-14L-12PLT-1-2" class="lock-item" data-status="unlocked" x="658" y="100"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-12PLT-1-2</title>
+                        </rect>
+                        <rect id="lock-14L-12PLT-2-2" class="lock-item" data-status="unlocked" x="658" y="127"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-12PLT-2-2</title>
+                        </rect>
+                        <rect id="lock-14L-12PLT-3-2" class="lock-item" data-status="unlocked" x="658" y="180"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14L-12PLT-3-2</title>
+                        </rect>
+                        <rect id="lock-14R-12PLT-4-2" class="lock-item" data-status="unlocked" x="658" y="242"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-12PLT-4-2</title>
+                        </rect>
+                        <rect id="lock-14R-12PLT-5-2" class="lock-item" data-status="unlocked" x="658" y="272"
+                            width="15" height="15" rx="2" stroke-width="1.5">
+                            <title>lock-14R-12PLT-5-2</title>
+                        </rect>
+                        <!--12Pと11Pの間(96と88が両方繋がった図)-->
+                        <g id="lock-12L-12PLT-1" class="lock-item" data-status="unlocked">
+                            <rect x="845" y="115" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="865" y="115" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="855" y="120" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-12L-12PLT-1</title>
+                        </g>
+                        <g id="lock-12L-12PLT-2" class="lock-item" data-status="unlocked">
+                            <rect x="845" y="140" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="865" y="140" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="855" y="145" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-12L-12PLT-2</title>
+                        </g>
+                        <g id="lock-12L-12PLT-3" class="lock-item" data-status="unlocked">
+                            <rect x="845" y="180" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="865" y="180" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="855" y="185" width="15" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-12L-12PLT-3</title>
+                        </g>
+                        <g id="lock-12L-12PLT-4" class="lock-item" data-status="unlocked">
+                            <rect x="845" y="230" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="865" y="230" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="855" y="235" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-12L-12PLT-4</title>
+                        </g>
+                        <g id="lock-12L-12PLT-5" class="lock-item" data-status="unlocked">
+                            <rect x="845" y="255" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="865" y="255" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="855" y="260" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-12L-12PLT-5</title>
+                        </g>
+                        <!--11P-->
+                        <rect id="lock-12L-11PLT-1" class="lock-item" data-status="unlocked" x="890" y="115" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12L-11PLT-1</title>
+                        </rect>
+                        <rect id="lock-12L-11PLT-2" class="lock-item" data-status="unlocked" x="890" y="140" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12L-11PLT-2</title>
+                        </rect>
+                        <rect id="lock-12R-11PLT-3" class="lock-item" data-status="unlocked" x="890" y="195" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12R-11PLT-3</title>
+                        </rect>
+                        <rect id="lock-12R-11PLT-4" class="lock-item" data-status="unlocked" x="890" y="230" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12R-11PLT-4</title>
+                        </rect>
+                        <rect id="lock-12R-11PLT-5" class="lock-item" data-status="unlocked" x="890" y="255" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-12R-11PLT-5</title>
+                        </rect>
+                    </g>
+                </g>
+
+                <g>
+                    <g transform="translate(0, -18)">
+                        <text x="600" y="342" font-family="sans-serif" font-size="16" font-weight="bold" fill="#334155"
+                            text-anchor="middle">AFT COMPARTMENT</text>
+
+                        <g id="pos-BULK">
+                            <rect x="35" y="380" width="165" height="200" rx="5" fill="#e2e8f0" stroke="#94a3b8"
+                                stroke-width="2" /><text x="117.5" y="450" font-size="24" font-weight="bold"
+                                fill="#475569" text-anchor="middle">BULK</text><text id="text-BULK" x="117.5" y="490"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+
+                        <!--以下AFT POS　L側-->
+                        <g id="pos-43L">
+                            <rect x="240" y="380" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="300" y="430" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">43L</text><text id="text-43L" x="300" y="360"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-42L">
+                            <rect x="360" y="380" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="420" y="430" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">42L</text><text id="text-42L" x="420" y="360"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-41L">
+                            <rect x="480" y="380" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="540" y="430" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">41L</text><text id="text-41L" x="540" y="360"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-33L">
+                            <rect x="600" y="380" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="665" y="430" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">33L</text><text id="text-33L" x="665" y="360"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-32L">
+                            <rect x="720" y="380" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="780" y="430" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">32L</text><text id="text-32L" x="780" y="360"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-31L">
+                            <rect x="840" y="380" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="900" y="430" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">31L</text><text id="text-31L" x="900" y="360"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+
+                        <!--以下AFT POS　R側-->
+                        <g id="pos-43R">
+                            <rect x="240" y="480" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="300" y="540" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">43R</text><text id="text-43R" x="300" y="600"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-42R">
+                            <rect x="360" y="480" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="420" y="540" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">42R</text><text id="text-42R" x="420" y="600"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-41R">
+                            <rect x="480" y="480" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="540" y="540" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">41R</text><text id="text-41R" x="540" y="600"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-33R">
+                            <rect x="600" y="480" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="665" y="540" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">33R</text><text id="text-33R" x="665" y="600"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-32R">
+                            <rect x="720" y="480" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="780" y="540" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">32R</text><text id="text-32R" x="780" y="600"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>
+                        <g id="pos-31R">
+                            <rect x="840" y="480" width="120" height="100" rx="5" fill="#dbeafe" stroke="#60a5fa"
+                                stroke-width="2" /><text x="900" y="540" font-size="24" font-weight="bold"
+                                fill="#1e40af" text-anchor="middle">31R</text><text id="text-31R" x="900" y="600"
+                                font-size="10" fill="#1e3a8a" text-anchor="middle"></text>
+                        </g>  
+                         
+                        <!--以下41LRの特別枠(32PにMが搭載された場合、8inAFT側に移動する赤枠破線)-->
+                        <g id="specialFramesAft">
+            <rect id="specialFrame-41L" x="460" y="385" width="120" height="85"  rx="5" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;"/>
+           
+            <rect id="specialFrame-41R" x="460" y="485" width="120" height="89" rx="5" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="5 5" style="display:none;"/>
+              </g>
+                    
+                        <!--以下AFT PLT POS-->
+                        <g id="pallet-42P" display="none">
+                            <rect x="240" y="380" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <text x="340" y="430" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">42P</text>
+                            <text id="text-42P" x="340" y="600" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-41P" display="none">
+                            <rect x="480" y="380" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <text x="530" y="430" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">41P</text>
+                            <text id="text-41P" x="530" y="600" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-32P" display="none">
+                            <rect x="720" y="380" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                                <rect id="pallet-32P-inner" x="580" y="385" width="230" height="190" rx="3" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 2" display="none" />
+                            <text x="685" y="430" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">32P</text>
+                            <text id="text-32P" x="685" y="600" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+                        <g id="pallet-31P" display="none">
+                            <rect x="720" y="380" width="240" height="200" rx="5" fill="#f0f9ff" stroke="#0ea5e9"
+                                stroke-width="2" />
+                            <text x="870" y="430" font-size="24" font-weight="bold" fill="#0c4a6e"
+                                text-anchor="middle">31P</text>
+                            <text id="text-31P" x="870" y="600" font-size="10" fill="#0c4a6e"
+                                text-anchor="middle"></text>
+                        </g>
+
+                        <!--以下CONTロック-->
+                        <rect id="lock-42L-43L-1" class="lock-item" data-status="unlocked" x="353" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42L-43L-1</title>
+                        </rect>
+                        <rect id="lock-42L-43L-2" class="lock-item" data-status="unlocked" x="353" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42L-43L-2</title>
+                        </rect>
+                        <rect id="lock-42R-43R-3" class="lock-item" data-status="unlocked" x="353" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42R-43R-3</title>
+                        </rect>
+                        <rect id="lock-42R-43R-4" class="lock-item" data-status="unlocked" x="353" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42R-43R-4</title>
+                        </rect>
+                        <rect id="lock-41L-42L-1-1" class="lock-item" data-status="unlocked" x="472" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41L-42L-1-1</title>
+                        </rect>
+                        <rect id="lock-41L-42L-2-1" class="lock-item" data-status="unlocked" x="472" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41L-42L-2-1</title>
+                        </rect>
+                        <rect id="lock-41L-42L-3-1" class="lock-item" data-status="unlocked" x="472" y="450" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41L-42L-3-1</title>
+                        </rect>
+                        <rect id="lock-41R-42R-4-1" class="lock-item" data-status="unlocked" x="472" y="495" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41R-42R-4-1</title>
+                        </rect>
+                        <rect id="lock-41R-42R-5-1" class="lock-item" data-status="unlocked" x="472" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41R-42R-5-1</title>
+                        </rect>
+                        <rect id="lock-41R-42R-6-1" class="lock-item" data-status="unlocked" x="472" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41R-42R-6-1</title>
+                        </rect>
+                        <rect id="lock-41L-42L-1-2" class="lock-item" data-status="unlocked" x="453" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41L-42L-1-2</title>
+                        </rect>
+                        <rect id="lock-41L-42L-2-2" class="lock-item" data-status="unlocked" x="453" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41L-42L-2-2</title>
+                        </rect>
+                        <rect id="lock-41L-42L-3-2" class="lock-item" data-status="unlocked" x="453" y="450" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41L-42L-3-2</title>
+                        </rect>
+                        <rect id="lock-41R-42R-4-2" class="lock-item" data-status="unlocked" x="453" y="495" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41R-42R-4-2</title>
+                        </rect>
+                        <rect id="lock-41R-42R-5-2" class="lock-item" data-status="unlocked" x="453" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41R-42R-5-2</title>
+                        </rect>
+                        <rect id="lock-41R-42R-6-2" class="lock-item" data-status="unlocked" x="453" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41R-42R-6-2</title>
+                        </rect>
+                        <rect id="lock-33L-41L-1-1" class="lock-item" data-status="unlocked" x="593" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33L-41L-1-1</title>
+                        </rect>
+                        <rect id="lock-33L-41L-2-1" class="lock-item" data-status="unlocked" x="593" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>llock-33L-41L-2-1</title>
+                        </rect>
+                        <rect id="lock-33L-41L-3-1" class="lock-item" data-status="unlocked" x="593" y="450" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33L-41L-3-1</title>
+                        </rect>
+                        <rect id="lock-33R-41R-4-1" class="lock-item" data-status="unlocked" x="593" y="495" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33R-41R-4-1</title>
+                        </rect>
+                        <rect id="lock-33R-41R-5-1" class="lock-item" data-status="unlocked" x="593" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33R-41R-5-1</title>
+                        </rect>
+                        <rect id="lock-33R-41R-6-1" class="lock-item" data-status="unlocked" x="593" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>ock-33R-41R-6-1</title>
+                        </rect>
+                        <rect id="lock-33L-41L-1-2" class="lock-item" data-status="unlocked" x="575" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33L-41L-1-2</title>
+                        </rect>
+                        <rect id="lock-33L-41L-2-2" class="lock-item" data-status="unlocked" x="575" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33L-41L-2-2</title>
+                        </rect>
+                        <rect id="lock-33L-41L-3-2" class="lock-item" data-status="unlocked" x="575" y="450" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33L-41L-3-2</title>
+                        </rect>
+                        <rect id="lock-33R-41R-4-2" class="lock-item" data-status="unlocked" x="575" y="495" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33R-41R-4-2</title>
+                        </rect>
+                        <rect id="lock-33R-41R-5-2" class="lock-item" data-status="unlocked" x="575" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33R-41R-5-2</title>
+                        </rect>
+                        <rect id="lock-33R-41R-6-2" class="lock-item" data-status="unlocked" x="575" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-33R-41R-6-2</title>
+                        </rect>
+                        <rect id="lock-32L-33L-1" class="lock-item" data-status="unlocked" x="713" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-32L-33L-1</title>
+                        </rect>
+                        <rect id="lock-32L-33L-2" class="lock-item" data-status="unlocked" x="713" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-32L-33L-2</title>
+                        </rect>
+                        <rect id="lock-32R-33R-3" class="lock-item" data-status="unlocked" x="713" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-32R-33R-3</title>
+                        </rect>
+                        <rect id="lock-32R-33R-4" class="lock-item" data-status="unlocked" x="713" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-32R-33R-4</title>
+                        </rect>
+                        <rect id="lock-31L-32L-1" class="lock-item" data-status="unlocked" x="832" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-31L-32L-1</title>
+                        </rect>
+                        <rect id="lock-31L-32L-2" class="lock-item" data-status="unlocked" x="832" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-31L-32L-2</title>
+                        </rect>
+                        <rect id="lock-31R-32R-3" class="lock-item" data-status="unlocked" x="832" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-31R-32R-3</title>
+                        </rect>
+                        <rect id="lock-31R-32R-4" class="lock-item" data-status="unlocked" x="832" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-31R-32R-4</title>
+                        </rect>
+
+                        <!--以下CENTERロック-->
+                        <circle id="lock-41C-1-1" class="lock-item" data-status="unlocked" cx="459" cy="480" r="8"
+                            stroke-width="1.5">
+                            <title>lock-41C-1-1</title>
+                        </circle>
+                        <rect id="lock-41C-1-2" class="lock-item" data-status="unlocked" x="468" y="473" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41C-1-2</title>
+                        </rect>
+                        <circle id="lock-41C-2-1" class="lock-item" data-status="unlocked" cx="525" cy="480" r="8"
+                            stroke-width="1.5">
+                            <title>lock-41C-2-1</title>
+                        </circle>
+                        <rect id="lock-41C-2-2" class="lock-item" data-status="unlocked" x="490" y="473" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41C-2-2</title>
+                        </rect>
+                        <circle id="lock-41C-3-1" class="lock-item" data-status="unlocked" cx="592" cy="480" r="8"
+                            stroke-width="1.5">
+                            <title>lock-41C-3-1</title>
+                        </circle>
+                        <rect id="lock-41C-3-2" class="lock-item" data-status="unlocked" x="548" y="473" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-41C-3-2</title>
+                        </rect>
+
+                        <!--以下PLTロック-->
+                        <!--42P 88ロック-->
+                        <rect id="lock-42L-PLT-1-1" class="lock-item" data-status="unlocked" x="395" y="400" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42L-PLT-1-1</title>
+                        </rect>
+                        <rect id="lock-42L-PLT-2-1" class="lock-item" data-status="unlocked" x="395" y="430" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42L-PLT-2-1</title>
+                        </rect>
+                        <rect id="lock-42R-PLT-3-1" class="lock-item" data-status="unlocked" x="395" y="480" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42R-PLT-3-1</title>
+                        </rect>
+                        <rect id="lock-42R-PLT-4-1" class="lock-item" data-status="unlocked" x="395" y="515" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42R-PLT-4-1</title>
+                        </rect>
+                        <rect id="lock-42R-PLT-5-1" class="lock-item" data-status="unlocked" x="395" y="540" width="15"
+                            height="15" rx="2" stroke-width="1.5">
+                            <title>lock-42R-PLT-5-1</title>
+                        </rect>
+
+                        <!--42Pと41Pの間(96と88が両方繋がった図)-->
+                        <g id="lock-42L-41PLT-1" class="lock-item" data-status="unlocked">
+                            <rect x="415" y="400" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="435" y="400" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="423" y="405" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-42L-41PLT-1</title>
+                        </g>
+                        <g id="lock-42L-41PLT-2" class="lock-item" data-status="unlocked">
+                            <rect x="415" y="430" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="435" y="430" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="423" y="435" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-42L-41PLT-2</title>
+                        </g>
+                        <g id="lock-42L-41PLT-3" class="lock-item" data-status="unlocked">
+                            <rect x="415" y="465" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="435" y="465" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="423" y="470" width="15" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-42L-41PLT-3</title>
+                        </g>
+                        <g id="lock-42R-41PLT-4" class="lock-item" data-status="unlocked">
+                            <rect x="415" y="515" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="435" y="515" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="423" y="520" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-42R-41PLT-4</title>
+                        </g>
+                        <g id="lock-42R-41PLT-5" class="lock-item" data-status="unlocked">
+                            <rect x="415" y="540" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="435" y="540" width="15" height="15" rx="2" stroke-width="1.5" />
+                            <rect x="423" y="545" width="17" height="5" rx="2" stroke-width="1.5" />
+                            <title>lock-42R-41PLT-5</title>
+                            </g>
+
+                            <!--31PのAFT側「...●-1」：88ロック、「...●-2」：96ロック-->
+                            <rect id="lock-32L-PLT-1-1" class="lock-item" data-status="unlocked" x="770" y="400"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32L-PLT-1-1</title>
+                            </rect>
+                            <rect id="lock-32L-PLT-2-1" class="lock-item" data-status="unlocked" x="770" y="430"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32L-PLT-2-1</title>
+                            </rect>
+                            <rect id="lock-32R-PLT-3-1" class="lock-item" data-status="unlocked" x="770" y="480"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32R-PLT-3-1</title>
+                            </rect>
+                            <rect id="lock-32R-PLT-4-1" class="lock-item" data-status="unlocked" x="770" y="515"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32R-PLT-4-1</title>
+                            </rect>
+                            <rect id="lock-32R-PLT-5-1" class="lock-item" data-status="unlocked" x="770" y="540"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32R-PLT-5-1</title>
+                            </rect>
+                            <rect id="lock-32L-PLT-1-2" class="lock-item" data-status="unlocked" x="750" y="400"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32L-PLT-1-2</title>
+                            </rect>
+                            <rect id="lock-32L-PLT-2-2" class="lock-item" data-status="unlocked" x="750" y="430"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32L-PLT-2-2</title>
+                            </rect>
+                            <rect id="lock-32R-PLT-3-2" class="lock-item" data-status="unlocked" x="750" y="480"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32R-PLT-3-2</title>
+                            </rect>
+                            <rect id="lock-32R-PLT-4-2" class="lock-item" data-status="unlocked" x="750" y="515"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>lock-32R-PLT-4-2</title>
+                            </rect>
+                            <rect id="lock-32R-PLT-5-2" class="lock-item" data-status="unlocked" x="750" y="540"
+                                width="15" height="15" rx="2" stroke-width="1.5">
+                                <title>Llock-32R-PLT-5-2</title>
+                            </rect>
+
+                            <!--41Pと32Pの間(96と88が両方繋がった図)-->
+                            <g id="lock-33L-41PLT-1" class="lock-item" data-status="unlocked">
+                                <rect x="630" y="400" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="650" y="400" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="638" y="405" width="17" height="5" rx="2" stroke-width="1.5" />
+                                <title>lock-33L-41PLT-1</title>
+                            </g>
+                            <g id="lock-33L-41PLT-2" class="lock-item" data-status="unlocked">
+                                <rect x="630" y="430" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="650" y="430" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="638" y="435" width="17" height="5" rx="2" stroke-width="1.5" />
+                                <title>Hlock-33L-41PLT-2</title>
+                            </g>
+                            <g id="lock-33L-41PLT-3" class="lock-item" data-status="unlocked">
+                                <rect x="630" y="465" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="650" y="465" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="638" y="470" width="17" height="5" rx="2" stroke-width="1.5" />
+                                <title>lock-33L-41PLT-3</title>
+                            </g>
+                            <g id="lock-33R-41PLT-4" class="lock-item" data-status="unlocked">
+                                <rect x="630" y="515" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="650" y="515" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="638" y="520" width="17" height="5" rx="2" stroke-width="1.5" />
+                                <title>lock-33R-41PLT-4</title>
+                            </g>
+                            <g id="lock-33R-41PLT-5" class="lock-item" data-status="unlocked">
+                                <rect x="630" y="540" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="650" y="540" width="15" height="15" rx="2" stroke-width="1.5" />
+                                <rect x="638" y="545" width="17" height="5" rx="2" stroke-width="1.5" />
+                                <title>lock-33R-41PLT-5</title>
+                            </g>
+
+                            <!--以下AFT Door Sideロック-->
+                            <rect id="lock-41R-bottom-1-1" class="lock-item" data-status="unlocked" x="433" y="573"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-1-1</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-1-2" class="lock-item" data-status="unlocked" x="445" y="580"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-1-2</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-2-1" class="lock-item" data-status="unlocked" x="500" y="573"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-2-1</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-2-2" class="lock-item" data-status="unlocked" x="513" y="580"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-2-2</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-3-1" class="lock-item" data-status="unlocked" x="550" y="573"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>ock-41R-bottom-3-1</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-3-2" class="lock-item" data-status="unlocked" x="562" y="580"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-3-2</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-4-1" class="lock-item" data-status="unlocked" x="615" y="573"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-4-1</title>
+                            </rect>
+                            <rect id="lock-41R-bottom-4-2" class="lock-item" data-status="unlocked" x="628" y="580"
+                                width="10" height="12" rx="2" stroke-width="1.5">
+                                <title>lock-41R-bottom-4-2</title>
+                            </rect>
+                        </g>
+            </svg>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button id="cameraBtn"
+                class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-semibold shadow-md w-full sm:w-auto action-button">カメラ起動</button>
+            <button id="openDriveBtn"
+                class="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 font-semibold shadow-md w-full sm:w-auto action-button">フォルダ格納</button>
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        </div>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 border-t pt-4">
+            <div><label for="aftLoadingStaff" class="block text-sm font-medium text-slate-700">AFT LOADING</label><input
+                    type="text" id="aftLoadingStaff" placeholder="担当者"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+            <div><label for="aftWcStaff" class="block text-sm font-medium text-slate-700">W C'k (AFT)</label><input
+                    type="text" id="aftWcStaff" placeholder="担当者"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+            <div><label for="fwdLoadingStaff" class="block text-sm font-medium text-slate-700">FWD LOADING</label><input
+                    type="text" id="fwdLoadingStaff" placeholder="担当者"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+            <div><label for="fwdWcStaff" class="block text-sm font-medium text-slate-700">W C'k (FWD)</label><input
+                    type="text" id="fwdWcStaff" placeholder="担当者"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+            </div>
+        </div>
+        <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button id="refreshBtn"
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold shadow-md w-full sm:w-auto action-button">Refresh</button>
+            <button id="updateBtn"
+                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-semibold shadow-md w-full sm:w-auto action-button">UP
+                date</button>
+        </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+
+    <script>
+        // (基本のスクリプトは共通)
+        const DRIVE_PARENT_FOLDER_URL = 'https://drive.google.com/drive/folders/12KADv8XGXKpzPQ6kgmAaE7yrWdW6-aTo?usp=drive_link';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby-SXqmRTakyEbRrxTTVriqDSbLna0PwCkeOP9ZOv-leon7M7PEeHsvo_o1yTLknwuM/exec';
+
+        const UNLOCKED_COLOR = '#334155';
+        const LOCKED_COLOR = '#2563eb';
+
+        // ★★★ 座標定義 (21PにM_P1, M_P2追加) ★★★
+        const palletCoordinates = {
+            // FWD
+            '22P': {
+                'A': { x: 90, width: 159 }, 
+                'M': { x: 90, width: 178 }  
+            },
+            '21P': {
+                'A': { x: 270, width: 180 },   
+                'M_P1': { x: 270, width: 197 }, 
+                'M_P2': { x: 250, width: 199 }  
+            },
+            '13P': { 
+                'A': { x: 468, width: 140 }, 
+                'M_P3': { x: 468, width: 158 }, 
+                'M_P4': { x: 450, width: 158 }  
+            },
+            '12P': { 
+                'A': { x: 665, width: 187 },
+                'M': { x: 647, width: 208 }
+            },
+            '11P': { 
+                'A': { x: 898, width: 140 },
+                'M': { x: 872, width: 165 }
+            },
+            // AFT
+            '42P': {
+                'A': { x: 245, width: 160 },
+                'M': { x: 245, width: 180 }
+            },
+            '41P': {
+                'A': { x: 443, width: 195 }
+            },
+            '32P': {
+                'A_P5': { x: 657, width: 117 },
+                'A_P6': { x: 600, width: 158 },
+                'A_P7': { x: 600, width: 158 },
+                'M_P8': { x: 582, width: 175 },
+                'M_P9': { x: 600, width: 178 }
+            },
+            '31P': {
+                'A': { x: 777, width: 185 },
+                'M': { x: 758, width: 205 }
+            }
+        };
+
+        const dqpMapping = {
+            '22P': { L: '24L', R: '24R' },
+            '21P': { L: '22L', R: '22R' },
+            '13P': { L: '21L', R: '21R' },
+            '12P': { L: '13L', R: '13R' },
+            '11P': { L: '11L', R: '11R' },
+            '42P': { L: '43L', R: '43R' },
+            '41P': { L: '41L', R: '41R' },
+            '32P': { L: '31L', R: '31R' },
+            '31P': { L: '31L', R: '31R' },
+        };
+
+        // --- 初期化・イベントリスナー設定 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const allInputs = document.querySelectorAll('input, textarea');
+            allInputs.forEach(input => input.addEventListener('input', () => { document.getElementById('connection-status').textContent = '未保存の変更があります'; }));
+            document.querySelectorAll('#flightName, #checkDate').forEach(input => input.addEventListener('change', loadData));
+            const loadingInstructions = document.getElementById('loadingInstructions');
+            loadingInstructions.addEventListener('input', () => {
+                extractInfoFromInstructions();
+                parseInstructionsAndApplyPattern();
+            });
+            document.querySelectorAll('.lock-item').forEach(lock => lock.addEventListener('click', () => toggleLockState(lock)));
+            document.getElementById('refreshBtn').addEventListener('click', loadData);
+            document.getElementById('updateBtn').addEventListener('click', saveState);
+            document.getElementById('imageUpload').addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) { return; }
+                const statusElement = document.getElementById('connection-status');
+                statusElement.textContent = '画像を解析中... (初回は時間がかかります)';
+                try {
+                    const worker = await Tesseract.createWorker('eng');
+                    const { data: { text } } = await worker.recognize(file);
+                    loadingInstructions.value = text;
+                    extractInfoFromInstructions();
+                    parseInstructionsAndApplyPattern();
+                    statusElement.textContent = '画像からの読み取りが完了しました';
+                    await worker.terminate();
+                } catch (error) {
+                    console.error('OCR処理中にエラーが発生しました:', error);
+                    statusElement.textContent = '画像解析に失敗しました';
+                }
+            });
+            document.getElementById('cameraBtn').addEventListener('click', () => document.getElementById('cameraInput').click());
+            document.getElementById('cameraInput').addEventListener('change', (event) => {
+                document.getElementById('imageUpload').files = event.target.files;
+                document.getElementById('imageUpload').dispatchEvent(new Event('change'));
+            });
+            document.getElementById('openDriveBtn').addEventListener('click', () => {
+                const flightName = document.getElementById('flightName').value.trim();
+                const checkDate = document.getElementById('checkDate').value;
+                if (!flightName || !checkDate) {
+                    alert('日付と便名を入力してください');
+                    return;
+                }
+                if (DRIVE_PARENT_FOLDER_URL.includes('YOUR_GOOGLE_DRIVE_FOLDER_URL_HERE')) {
+                    alert('有効なGoogle Driveの親フォルダURLをHTMLコード内に設定してください。');
+                    return;
+                }
+                window.open(DRIVE_PARENT_FOLDER_URL, '_blank');
+                alert(`親フォルダを新しいタブで開きました。\n\n「${checkDate}」フォルダの中にある「${flightName}」フォルダに写真を格納してください。\n\n該当フォルダがない場合は、Google Drive上で作成してください。`);
+            });
+            if (!document.getElementById('checkDate').value) {
+                document.getElementById('checkDate').valueAsDate = new Date();
+            }
+            loadData();
+        });
+
+        // --- メインロジック ---
+
+        function getUldSize(uldString) {
+            if (!uldString) return null;
+            const firstWord = uldString.trim().split(' ')[0].toUpperCase();
+            if (firstWord.startsWith('PAG')) { return 'A'; }
+            if (firstWord.startsWith('PMC')) { return 'M'; }
+            if (firstWord.length === 1 && ['K', 'Q'].includes(firstWord)) { return firstWord; }
+            if (firstWord.length < 2) return null;
+            const char2 = firstWord.charAt(1);
+            if (['K', 'Q'].includes(char2)) { return char2; }
+            return null;
+        }
+
+        // ★★★ 修正版 (二重描画対応) ★★★
+        /**
+           * ★★★ 修正版 (二重枠の時、背景を透明にする) ★★★
+           */
+        function handlePalletDisplay(occupiedPositions, svgId, palletContent, palletSize, coordsOuter, coordsInner = null) {
+
+            occupiedPositions.forEach(posId => {
+                const posG = document.getElementById(`pos-${posId}`);
+                if (posG) posG.style.display = 'none';
+            });
+
+            const palletG = document.getElementById(svgId);
+            if (palletG) {
+                palletG.style.display = 'inline';
+
+                const rectOuter = palletG.querySelector('rect'); // 外枠
+                const rectInner = document.getElementById(`${svgId}-inner`); // 内枠
+                const posText = palletG.querySelector('text');
+                const contentText = document.getElementById(`text-${svgId.split('-')[1]}`);
+
+                if (!rectOuter) return;
+
+                const sizeKey = (palletSize === 'A' || palletSize === 'M') ? palletSize : 'A';
+
+                // ★ 内枠(二重枠)があるかないかで処理を分岐
+                if (coordsInner && rectInner) {
+                    // --- 二重枠の場合 (例: 21P ケース4) ---
+
+                    // ★★★ 修正: 塗りつぶしを透明にする ★★★
+                    rectOuter.setAttribute('fill', 'none');
+                    rectInner.setAttribute('fill', 'none'); // (SVG側でnoneだが念のため)
+
+                    // ★ 外枠 (実線) を 青 に
+                    rectOuter.setAttribute('stroke', LOCKED_COLOR); // 🟦 青色
+                    if (posText) posText.setAttribute('fill', '#1e40af');
+                    if (contentText) contentText.setAttribute('fill', '#1e40af');
+
+                    // ★ 内枠 (破線) を 赤 に
+                    rectInner.style.display = 'inline';
+                    rectInner.setAttribute('stroke', '#dc2626'); // 🟥 赤色
+
+                    // 座標設定
+                    rectOuter.setAttribute('x', coordsOuter.x);
+                    rectOuter.setAttribute('width', coordsOuter.width);
+                    rectInner.setAttribute('x', coordsInner.x);
+                    rectInner.setAttribute('width', coordsInner.width);
+
+                } else {
+                    // --- 通常の枠 (単一) の場合 ---
+
+                    if (rectInner) rectInner.style.display = 'none';
+
+                    // (従来の色設定)
+                    if (sizeKey === 'A') { // 88インチ (PAG)
+                        rectOuter.setAttribute('fill', '#f0f9ff'); // 水色の塗りつぶし
+                        rectOuter.setAttribute('stroke', '#f59e0b'); // オレンジ
+                        if (posText) posText.setAttribute('fill', '#0c4a6e');
+                        if (contentText) contentText.setAttribute('fill', '#0c4a6e');
+                    } else { // 96インチ (PMC) または 'M'
+                        rectOuter.setAttribute('fill', '#fffbeb'); // 黄色の塗りつぶし
+                        rectOuter.setAttribute('stroke', '#f59e0b'); // オレンジ
+                        if (posText) posText.setAttribute('fill', '#78350f');
+                        if (contentText) contentText.setAttribute('fill', '#78350f');
+                    }
+
+                    // (座標設定)
+                    rectOuter.setAttribute('x', coordsOuter.x);
+                    rectOuter.setAttribute('width', coordsOuter.width);
+                }
+
+                if (contentText) {
+                    applyTextToSVG(contentText, palletContent);
+                }
+            }
+        }
+
+        // ★★★ 修正版 (21Pの複雑な分岐 + その他はA/M分岐 + 重複宣言エラー修正) ★★★
+
+
+    function parseInstructionsAndApplyPattern() {
+        const text = document.getElementById('loadingInstructions').value;
+        const allLockElements = document.querySelectorAll('.lock-item');
+        const loadedPositions = new Map();
+        let isFwdLoaded = false;
+        let isAftLoaded = false;
+        
+        const dqpCounts = {};
+
+        // 1. 表示リセット & LIR定義
+        const palletPositions = {
+            '22P': { occupy: ['23L', '24L', '23R', '24R'], svg: 'pallet-22P' },
+            '21P': { occupy: ['21L', '22L', '23L', '21R', '22R', '23R'], svg: 'pallet-21P' },
+            '13P': { occupy: ['14L', '21L', '14R', '21R'], svg: 'pallet-13P' },
+            '12P': { occupy: ['12L', '12R'], svg: 'pallet-12P' },
+            '11P': { occupy: ['11L', '12L', '11R', '12R'], svg: 'pallet-11P' },
+            '42P': { occupy: ['42L', '43L', '42R', '43R'], svg: 'pallet-42P' },
+            '41P': { occupy: ['41L','42L', '33L', '41R', '42R','33R'], svg: 'pallet-41P' },
+            '32P': { occupy: ['33L', '32L', '33R', '32R'], svg: 'pallet-32P' },
+            '31P': { occupy: ['31L', '32L', '31R', '32R'], svg: 'pallet-31P' }
+        };
+
+      // DQPマッピング
+        const dqpMapping = {
+            '22P': { L: '23L', R: '23R' }, '21P': { L: '21L', R: '21R' },
+            '13P': { L: '13L', R: '13R' }, '12P': { L: '12L', R: '12R' }, '11P': { L: '11L', R: '11R' },
+            '42P': { L: '43L', R: '43R' }, '41P': { L: '41L', R: '41R' }, '31P': { L: '31L', R: '31R' }
+        };
+
+        const dqpTextPositionMap = {
+            '22P': { L: { x: 180, y: 75 }, R: { x: 180, y: 320 } },
+            '21P': { L: { x: 366, y: 75 }, R: { x: 366, y: 320 } },
+            '13P': { L: { x: 547, y: 75 }, R: { x: 547, y: 320 } },
+            '12P': { L: { x: 750, y: 75 }, R: { x: 750, y: 320 } },
+            '11P': { L: { x: 960, y: 75 }, R: { x: 960, y: 320 } },
+        };
+
+
+        const palletPosKeys = Object.keys(palletPositions);
+        const fwdContainerPos = ['24L', '24R', '23L', '23R', '22L', '22R', '21L', '21R', '14L', '14R', '13L', '13R', '12L', '12R', '11L', '11R'];
+        const aftContainerPos = ['43L', '43R', '42L', '42R', '41L', '41R', '33L', '33R', '32L', '32R', '31L', '31R'];
+        const containerPositions = [...fwdContainerPos, ...aftContainerPos, 'BULK'];
+        
+        // --- リセット処理 ---
+        containerPositions.forEach(pos => {
+            const posG = document.getElementById(`pos-${pos}`);
+            if (posG) {
+                posG.style.display = 'inline'; 
+                posG.style.opacity = '1'; 
+                posG.querySelectorAll('text').forEach(t => t.style.display = 'inline');
+            }
+            const textEl = document.getElementById(`text-${pos}`);
+            if (textEl) {
+                if (textEl.hasAttribute('data-org-x')) textEl.setAttribute('x', textEl.getAttribute('data-org-x'));
+                if (textEl.hasAttribute('data-org-y')) textEl.setAttribute('y', textEl.getAttribute('data-org-y'));
+                while (textEl.firstChild) { textEl.removeChild(textEl.firstChild); }
+                textEl.textContent = '';
+            }
+        });
+        palletPosKeys.forEach(pos => {
+            if (!palletPositions[pos]) return;
+            const svgId = palletPositions[pos].svg;
+            const palletG = document.getElementById(svgId);
+            if (palletG) {
+                palletG.style.display = 'none';
+                const rect = palletG.querySelector('rect');
+                if (rect) {
+                    const defaultKey = (pos.includes('P')) ? 'A' : 'A'; 
+                    if (palletCoordinates[pos] && palletCoordinates[pos]['A']) {
+                        const defaultCoords = palletCoordinates[pos]['A'];
+                        rect.setAttribute('x', defaultCoords.x);
+                        rect.setAttribute('width', defaultCoords.width);
+                    }
+                }
+                const rectInner = document.getElementById(`${svgId}-inner`);
+                if (rectInner) rectInner.style.display = 'none';
+            }
+            if (svgId) {
+                const textEl = document.getElementById(`text-${svgId.split('-')[1]}`);
+                if (textEl) {
+                    while (textEl.firstChild) { textEl.removeChild(textEl.firstChild); }
+                    textEl.textContent = '';
+                }
+            }
+        });
+        document.querySelectorAll('rect[id^="dqpFrame-"]').forEach(r => r.style.display = 'none');
+        document.querySelectorAll('rect[id^="qSizeFrame-"]').forEach(r => r.style.display = 'none');
+        ['specialFrame-41L', 'specialFrame-41R', 'specialFrame-21L', 'specialFrame-21R'].forEach(id => { 
+            const el = document.getElementById(id); if(el) el.style.display = 'none'; 
+        });
+
+        // ステップ 1: コンテナ読み込み
+        text.split('\n').forEach(line => {
+            const trimmedLine = line.trim().toUpperCase();
+            const entries = trimmedLine.startsWith('-') ? trimmedLine.substring(1).split('-') : [trimmedLine];
+            entries.forEach(entry => {
+                if (!entry) return;
+                for (const pos of containerPositions) {
+                    if (entry.startsWith(pos)) {
+                        let content = entry.substring(pos.length).replace(/\/\/$/, '').trim();
+                        if (content.startsWith('/')) content = content.substring(1).trim();
+                        if (!content || content === 'N') break;
+                        if (loadedPositions.has(pos)) continue;
+                        const size = getUldSize(content);
+                        loadedPositions.set(pos, { content, size, isPallet: false });
+                        if (fwdContainerPos.includes(pos)) isFwdLoaded = true;
+                        if (aftContainerPos.includes(pos) || pos === 'BULK') isAftLoaded = true;
+                        break;
+                    }
+                }
+            });
+        });
+
+        const hasPos = (pos) => loadedPositions.has(pos);
+        const has21LR = hasPos('21L') || hasPos('21R');
+        
+        // ステップ 3: パレット/DQP読み込み
+        text.split('\n').forEach(line => {
+            const trimmedLine = line.trim().toUpperCase();
+            const entries = trimmedLine.startsWith('-') ? trimmedLine.substring(1).split('-') : [trimmedLine];
+            entries.forEach(entry => {
+                if (!entry) return;
+                for (const pos of palletPosKeys) {
+                    if (entry.startsWith(pos)) {
+                        let content = entry.substring(pos.length).replace(/\/\/$/, '').trim();
+                        if (content.startsWith('/')) content = content.substring(1).trim();
+                        if (!content || content === 'N') break;
+                        const size = getUldSize(content);
+                        if (size === 'Q') { // DQP
+                            dqpCounts[pos] = (dqpCounts[pos] || 0) + 1;
+                            let targetPos = null;
+                            let dqpSide = (dqpCounts[pos] === 1) ? 'L' : 'R';
+                            if (dqpMapping[pos]) targetPos = (dqpCounts[pos] === 1) ? dqpMapping[pos].L : dqpMapping[pos].R;
+                            if (targetPos) {
+                                loadedPositions.set(targetPos, { 
+                                    content, size, isPallet: false, isDQP: true, 
+                                    basePos: pos, dqpSide: dqpSide 
+                                });
+                            }
+                            if (palletPositions[pos]?.occupy.some(p => p.startsWith('1') || p.startsWith('2'))) isFwdLoaded = true;
+                            if (palletPositions[pos]?.occupy.some(p => p.startsWith('3') || p.startsWith('4'))) isAftLoaded = true;
+                        } else if (size === 'A' || size === 'M') { // パレット
+                            loadedPositions.set(pos, { content, size, isPallet: true });
+                            const occupiedPositions = palletPositions[pos].occupy;
+                            occupiedPositions.forEach(occPos => {
+                                if (pos === '21P' && has21LR && (occPos === '21L' || occPos === '21R')) {} 
+                                else { loadedPositions.set(occPos, { content: `OCCUPIED BY ${pos}`, size, isOccupied: true }); }
+                            });
+                            if (palletPositions[pos]?.occupy.some(p => p.startsWith('1') || p.startsWith('2'))) isFwdLoaded = true;
+                            if (palletPositions[pos]?.occupy.some(p => p.startsWith('3') || p.startsWith('4'))) isAftLoaded = true;
+                        }
+                        break;
+                    }
+                }
+            });
+        });
+        
+        // 23L/R枠の補正
+        loadedPositions.forEach((data, pos) => {
+            if (data.isOccupied) {
+                const posG = document.getElementById(`pos-${pos}`);
+                if (posG) posG.style.display = 'none';
+            }
+        });
+
+        const size22P = loadedPositions.get('22P')?.isPallet ? loadedPositions.get('22P').size : null;
+        const size21P = loadedPositions.get('21P')?.isPallet ? loadedPositions.get('21P').size : null;
+        let patternKey_21P = null;
+        let patternKey_13P = null;
+
+        // ★★★ ステップ 4.1: 21P描画 ★★★
+        if (loadedPositions.has('21P') && loadedPositions.get('21P').isPallet) {
+            const data = loadedPositions.get('21P');
+            const palletName = '21P';
+            const palletSize = data.size;
+            const palletInfo = palletPositions[palletName];
+            const svgId = palletInfo.svg;
+            const sizeKey = (palletSize === 'A' || palletSize === 'M') ? palletSize : 'A';
+            let coordsOuter = null, coordsInner = null;
+            
+            let occupiedPositions = ['22L', '22R']; 
+            const has13P = (loadedPositions.has('13P') && loadedPositions.get('13P').isPallet);
+
+            // コンテナ枠・特別枠の制御
+            if (!has21LR) {
+                const g21L = document.getElementById('pos-21L');
+                if(g21L) g21L.style.display = 'none';
+                const g21R = document.getElementById('pos-21R');
+                if(g21R) g21R.style.display = 'none';
+
+                if (!has13P) {
+                    const f21L = document.getElementById('specialFrame-21L');
+                    if(f21L) f21L.style.display = 'inline';
+                    const f21R = document.getElementById('specialFrame-21R');
+                    if(f21R) f21R.style.display = 'inline';
+                }
+            } 
+
+            // 座標定義
+            const coordsA = palletCoordinates['21P']['A'];
+            const coordsM_P1 = palletCoordinates['21P']['M_P1'];
+            const coordsM_P2 = palletCoordinates['21P']['M_P2'];
+
+            // 座標決定ロジック
+            if (size22P) {
+                // 22Pがある場合
+                if (!has21LR) {
+                    if (size22P === 'M' && sizeKey === 'M') { coordsOuter = coordsM_P1; patternKey_21P = 'M_P1'; }
+                    else if (size22P === 'A' && sizeKey === 'A') { coordsOuter = coordsA; patternKey_21P = 'A'; }
+                    else if (size22P === 'M' && sizeKey === 'A') { coordsOuter = coordsA; patternKey_21P = 'A'; }
+                    else if (size22P === 'A' && sizeKey === 'M') { coordsOuter = coordsM_P1; coordsInner = coordsM_P2; patternKey_21P = 'M_P1'; }
+                    else if (sizeKey === 'A') { coordsOuter = coordsA; patternKey_21P = 'A'; }
+                    else { coordsOuter = coordsM_P1; patternKey_21P = 'M_P1'; }
+                } else {
+                    if (size22P === 'A' && sizeKey === 'M') { coordsOuter = coordsM_P2; patternKey_21P = 'M_P2'; }
+                    else if (size22P === 'A' && sizeKey === 'A') { coordsOuter = coordsA; patternKey_21P = 'A'; }
+                    else if (size22P === 'M' && sizeKey === 'A') { coordsOuter = coordsA; patternKey_21P = 'A'; }
+                    else if (size22P === 'M' && sizeKey === 'M') { coordsOuter = coordsM_P1; patternKey_21P = 'M_P1'; }
+                    else if (sizeKey === 'A') { coordsOuter = coordsA; patternKey_21P = 'A'; }
+                    else { coordsOuter = coordsM_P2; patternKey_21P = 'M_P2'; }
+                }
+            } else {
+                // 22Pがない場合 (21L/Rのみで判断)
+                if (sizeKey === 'M') {
+                    if (!has21LR) {
+                        coordsOuter = coordsM_P1; coordsInner = coordsM_P2; patternKey_21P = 'M (P1+P2)';
+                    } else {
+                        coordsOuter = coordsM_P2; patternKey_21P = 'M (P2)';
+                    }
+                } else {
+                    coordsOuter = coordsA; patternKey_21P = 'A';
+                }
+            }
+
+            if (coordsOuter) handlePalletDisplay(occupiedPositions, svgId, data.content, palletSize, coordsOuter, coordsInner);
+        }
+
+        // ステップ 4.2: その他パレット描画
+        let is32P_P8 = false;
+        loadedPositions.forEach((data, pos) => {
+            if (pos === '21P') return; 
+            if (data.isPallet) {
+                const palletName = pos;
+                const palletSize = data.size;
+                const palletInfo = palletPositions[palletName];
+                if (!palletInfo) return;
+                const occupiedPositions = [...palletInfo.occupy];
+                const svgId = palletInfo.svg;
+                const sizeKey = (palletSize === 'A' || palletSize === 'M') ? palletSize : 'A';
+                let coordsOuter = null, coordsInner = null;
+                let patternKey = 'N/A';
+
+                if (palletName === '13P') {
+                    const coordsA = palletCoordinates['13P']['A'];
+                    const coordsM_P3 = palletCoordinates['13P']['M_P3'];
+                    const coordsM_P4 = palletCoordinates['13P']['M_P4'];
+                    if (sizeKey === 'A') { 
+                        coordsOuter = coordsA; patternKey = 'A'; 
+                    } else {
+                        const is21P_Case4 = (!has21LR && size22P === 'A' && size21P === 'M');
+                        if (patternKey_21P === 'M_P1' && !is21P_Case4) { 
+                            coordsOuter = coordsM_P3; patternKey = 'M_P3'; 
+                        } else {
+                            if (is21P_Case4) { coordsOuter = coordsM_P3; coordsInner = coordsM_P4; patternKey = 'M_P3 + M_P4 (特殊反転)'; }
+                            else { coordsOuter = coordsM_P4; coordsInner = coordsM_P3; patternKey = 'M_P4 + M_P3'; }
+                        }
+                    }
+                    patternKey_13P = patternKey;
+                } else if (palletName === '32P') {
+                    const coordsP5 = palletCoordinates['32P']['A_P5'];
+                    const coordsP6 = palletCoordinates['32P']['A_P6'];
+                    const coordsP7 = palletCoordinates['32P']['A_P7'];
+                    const coordsP8 = palletCoordinates['32P']['M_P8'];
+                    const coordsP9 = palletCoordinates['32P']['M_P9'];
+                    const size31P = (loadedPositions.get('31P')?.isPallet) ? loadedPositions.get('31P').size : null;
+
+                    if (sizeKey === 'A') {
+                        if (size31P === 'A') { coordsOuter = coordsP6; coordsInner = coordsP5; patternKey = 'A (P6+P5)'; }
+                        else if (size31P === 'M') { coordsOuter = coordsP7; patternKey = 'A (P7)'; }
+                        else { coordsOuter = coordsP7; patternKey = 'A (P7 default)'; }
+                    } else {
+                        if (size31P === 'M') {
+                            coordsOuter = coordsP8; patternKey = 'M (P8)';
+                            is32P_P8 = true; // P8フラグ
+                        } else if (size31P === 'A') { coordsOuter = coordsP9; patternKey = 'M (P9)'; }
+                        else { coordsOuter = coordsP9; patternKey = 'M (P9 default)'; }
+                    }
+                } else {
+                    if (palletCoordinates[palletName] && palletCoordinates[palletName][sizeKey]) {
+                        coordsOuter = palletCoordinates[palletName][sizeKey];
+                    }
+                }
+                if (coordsOuter) handlePalletDisplay(occupiedPositions, svgId, data.content, palletSize, coordsOuter, coordsInner);
+                
+            } else if (data.isOccupied) {
+            } else {
+                const textEl = document.getElementById(`text-${pos}`);
+                if (textEl) {
+                    textEl.style.display = 'inline';
+                    textEl.setAttribute('fill', '#1e3a8a');
+                    if (data.isDQP && data.basePos && data.dqpSide) {
+                        if (!textEl.hasAttribute('data-org-x')) textEl.setAttribute('data-org-x', textEl.getAttribute('x'));
+                        if (!textEl.hasAttribute('data-org-y')) textEl.setAttribute('data-org-y', textEl.getAttribute('y'));
+                        const customCoords = dqpTextPositionMap[data.basePos]?.[data.dqpSide];
+                        if (customCoords) {
+                            textEl.setAttribute('x', customCoords.x);
+                            textEl.setAttribute('y', customCoords.y);
+                        }
+                    }
+                    applyTextToSVG(textEl, data.content);
+                }
+            }
+        });
+
+        // ステップ 5, 6: DQP/Qサイズ枠
+        for (const pos in dqpCounts) {
+            const count = dqpCounts[pos];
+            const lFrame = document.getElementById(`dqpFrame-${pos}-L`);
+            const rFrame = document.getElementById(`dqpFrame-${pos}-R`);
+            if (count === 1 && lFrame) lFrame.style.display = 'inline';
+            else if (count >= 2 && lFrame && rFrame) { lFrame.style.display = 'inline'; rFrame.style.display = 'inline'; }
+        }
+        const checkAndDisplayQFrame = (lPos, rPos, frameId) => {
+            const lData = loadedPositions.get(lPos);
+            const rData = loadedPositions.get(rPos);
+            const frameRect = document.getElementById(frameId);
+            if (!frameRect) return;
+            if (!frameRect.dataset.originalX) {
+                frameRect.dataset.originalX = frameRect.getAttribute('x');
+                frameRect.dataset.originalWidth = frameRect.getAttribute('width');
+            }
+            const originalX = frameRect.dataset.originalX;
+            const originalWidth = parseFloat(frameRect.dataset.originalWidth);
+            const lIsAvailable = lData && !lData.isPallet && !lData.isOccupied && !lData.isDQP;
+            const rIsAvailable = rData && !rData.isPallet && !rData.isOccupied && !rData.isDQP;
+            if (lIsAvailable && rIsAvailable) {
+                if (lData.size === 'Q' && rData.size === 'Q') { frameRect.style.display = 'inline'; frameRect.setAttribute('width', originalWidth); frameRect.setAttribute('x', originalX); }
+                else if (lData.size === 'Q') { frameRect.style.display = 'inline'; frameRect.setAttribute('width', originalWidth / 2); frameRect.setAttribute('x', originalX); }
+            } else if (lIsAvailable && lData.size === 'Q') { frameRect.style.display = 'inline'; frameRect.setAttribute('width', originalWidth); frameRect.setAttribute('x', originalX); }
+        };
+        checkAndDisplayQFrame('24L', '24R', 'qSizeFrame-24'); checkAndDisplayQFrame('23L', '23R', 'qSizeFrame-23');
+        checkAndDisplayQFrame('22L', '22R', 'qSizeFrame-22'); checkAndDisplayQFrame('21L', '21R', 'qSizeFrame-21');
+        checkAndDisplayQFrame('14L', '14R', 'qSizeFrame-14'); checkAndDisplayQFrame('13L', '13R', 'qSizeFrame-13');
+        checkAndDisplayQFrame('12L', '12R', 'qSizeFrame-12'); checkAndDisplayQFrame('11L', '11R', 'qSizeFrame-11');
+        checkAndDisplayQFrame('43L', '43R', 'qSizeFrame-43'); checkAndDisplayQFrame('42L', '42R', 'qSizeFrame-42');
+        checkAndDisplayQFrame('41L', '41R', 'qSizeFrame-41'); checkAndDisplayQFrame('33L', '33R', 'qSizeFrame-33');
+        checkAndDisplayQFrame('32L', '32R', 'qSizeFrame-32'); checkAndDisplayQFrame('31L', '31R', 'qSizeFrame-31');
+
+        // ステップ 8: 32P-P8 & 41L/R表示制御
+        const has41L = (loadedPositions.has('41L') && !loadedPositions.get('41L').isOccupied);
+        const has41R = (loadedPositions.has('41R') && !loadedPositions.get('41R').isOccupied);
+        if (is32P_P8) {
+            if (!has41L) {
+                const g = document.getElementById('pos-41L');
+                if (g) g.querySelectorAll('text').forEach(t => t.style.display = 'none');
+            } else {
+                const f = document.getElementById('specialFrame-41L');
+                if(f) f.style.display = 'inline';
+            }
+            if (!has41R) {
+                const g = document.getElementById('pos-41R');
+                if (g) g.querySelectorAll('text').forEach(t => t.style.display = 'none');
+            } else {
+                const f = document.getElementById('specialFrame-41R');
+                if(f) f.style.display = 'inline';
+            }
+        }
+
+        // ★★★ ステップ 7: ロック有効化/無効化 ★★★
+        const activeLocks = new Set();
+        allLockElements.forEach(lock => { if (lock.id) activeLocks.add(lock.id); });
+        const getSize = (pos) => (loadedPositions.get(pos)?.isPallet ? loadedPositions.get(pos).size : (loadedPositions.get(pos)?.size || null));
+
+        // 1. Kサイズ
+        const kSizeDisableMap = {
+            //FWD
+            '23L': ['lock-23L-PLT-1-1', 'lock-23L-PLT-1-2', 'lock-23L-PLT-2-1', 'lock-23L-PLT-2-2'],
+            '23R': ['lock-23R-PLT-3-1', 'lock-23R-PLT-4-1', 'lock-23R-PLT-5-1', 'lock-23R-PLT-3-2', 'lock-23R-PLT-4-2', 'lock-23R-PLT-5-2'],
+            '21L': ['lock-23L-21PLT-1', 'lock-23L-21PLT-2'],
+            '21R': ['lock-23R-21PLT-3', 'lock-23R-21PLT-4', 'lock-23R-21PLT-5'],
+            '14L': ['lock-14L-13PLT-1-1', 'lock-14L-13PLT-2-1', 'lock-14L-13PLT-1-2', 'lock-14L-13PLT-2-2', 'lock-14L-12PLT-1-1', 'lock-14L-12PLT-2-1', 'lock-14L-12PLT-1-2', 'lock-14L-12PLT-2-2', 'lock-14L-12PLT-3-2'],
+            '14R': ['lock-14R-13PLT-3-1', 'lock-14R-13PLT-4-1', 'lock-14R-13PLT-5-1', 'lock-14R-13PLT-3-2', 'lock-14R-12PLT-4-1', 'lock-14R-13PLT-4-2', 'lock-14R-12PLT-5-1', 'lock-14R-13PLT-5-2', 'lock-14R-12PLT-3-1', 'lock-14R-12PLT-4-1', 'lock-14R-12PLT-4-2', 'lock-14R-12PLT-5-1', 'lock-14R-12PLT-5-2', 'lock-14R-12PLT-4-2', 'lock-14R-12PLT-5-2', 'lock-13R-AUX-1-1'],
+            '13R': ['lock-13R-AUX-2-2', 'lock-13R-AUX-2-1', 'lock-13R-AUX-3-1', 'lock-13R-AUX-3-2'],
+            '12L': ['lock-12L-11PLT-1', 'lock-12L-11PLT-2', 'lock-12L-12PLT-1', 'lock-12L-12PLT-2', 'lock-12L-12PLT-3'],
+            '12R': ['lock-12R-11PLT-3', 'lock-12R-11PLT-4', 'lock-12R-11PLT-5', 'lock-13R-AUX-4-1', 'lock-12L-12PLT-4', 'lock-12L-12PLT-5'],
+
+        //AFT
+         
+            '42L': ['lock-42L-PLT-1-1', 'lock-42L-PLT-2-1', 'lock-42L-41PLT-1', 'lock-42L-41PLT-2', 'lock-42L-41PLT-3', 'lock-41L-42L-1-2', 'lock-41L-42L-2-2', 'lock-41L-42L-3-2'],
+            '42R': ['lock-42R-PLT-3-1', 'lock-42R-PLT-4-1', 'lock-42R-PLT-5-1', 'lock-42R-41PLT-4', 'lock-42R-41PLT-5', 'lock-41R-42R-4-2', 'lock-41R-42R-5-2', 'lock-41R-42R-6-2'],
+            '41L': ['lock-33L-41L-1-2', 'lock-33L-41L-2-2', 'lock-33L-41L-3-2'],
+            '41R': ['lock-33R-41R-4-2', 'lock-33R-41R-5-2', 'lock-33R-41R-6-2'],
+            '33L': ['lock-33L-41PLT-1', 'lock-33L-41PLT-2', 'lock-33L-41PLT-3'],
+            '33R': ['lock-33R-41PLT-4', 'lock-33R-41PLT-5'],
+            '32L': ['lock-32L-PLT-1-2', 'lock-32L-PLT-2-2', 'lock-32L-PLT-1-1', 'lock-32L-PLT-2-1'],
+            '32R': ['lock-32R-PLT-3-2', 'lock-32R-PLT-4-2', 'lock-32R-PLT-5-2', 'lock-32R-PLT-3-1', 'lock-32R-PLT-4-1', 'lock-32R-PLT-5-1'],
+          
+        };
+        
+
+        // 2. Q(DQP)サイズ (コンテナPOS基準)
+        const qSizeDisableMap = {
+          '23L': ['lock-23L-PLT-1-1', 'lock-23L-PLT-1-2', 'lock-23L-PLT-2-1', 'lock-23L-PLT-2-2', 'lock-23R-PLT-3-1', 'lock-23R-PLT-4-1', 'lock-23R-PLT-3-2', 'lock-23R-PLT-4-2'],
+            '21L': ['lock-23L-21PLT-1', 'lock-23L-21PLT-2', 'lock-23R-21PLT-3', 'lock-23R-21PLT-4'],
+            '14L': ['lock-14L-13PLT-1-1', 'lock-14L-13PLT-2-1', 'lock-14R-13PLT-3-1', 'lock-14R-13PLT-4-1', 'lock-14L-13PLT-1-2', 'lock-14L-13PLT-2-2', 'lock-14R-13PLT-3-2', 'lock-14R-13PLT-4-2', 'lock-14L-12PLT-1-1', 'lock-14L-12PLT-2-1', 'lock-14R-12PLT-3-1', 'lock-14R-12PLT-4-1', 'lock-14L-12PLT-1-2', 'lock-14L-12PLT-2-2', 'lock-14L-12PLT-3-2', 'lock-14R-12PLT-4-2'],
+            '13L': ['lock-13C-1-1', 'lock-13C-1-2', 'lock-13C-2-1', 'lock-13C-2-2'],
+            '12L': ['lock-13C-3-1', 'lock-13C-3-2', 'lock-12L-11PLT-1', 'lock-12L-11PLT-2', 'lock-12R-11PLT-3', 'lock-12R-11PLT-4', 'lock-12L-12PLT-1', 'lock-12L-12PLT-2', 'lock-12L-12PLT-3', 'lock-12L-12PLT-4']
+           };
+
+        // 3. DQP(パレットPOS基準)
+        const dqpLockMap = {
+'22P': { 
+                L: ['lock-23L-24L-1', 'lock-23L-24L-2', 'lock-23L-PLT-1-1', 'lock-23L-PLT-2-1'], 
+                R: ['lock-23R-24R-3', 'lock-23R-24R-4', 'lock-23R-PLT-3-1', 'lock-23R-PLT-4-1', 'lock-23R-PLT-5-1'] 
+            },
+            '21P': {
+                L: ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-21L-22L-1', 'lock-21L-22L-2'],
+                R: ['lock-22R-23R-3', 'lock-22R-23R-4', 'lock-21R-22R-3', 'lock-21R-22R-4', 'lock-21R-22R-5']
+            },
+            '13P': {
+                L: ['lock-14L-21L-1', 'lock-14L-21L-2', 'lock-14L-13PLT-1-1', 'lock-14L-13PLT-2-1'],
+                R: ['lock-14R-21R-3', 'lock-14R-21R-4', 'lock-14R-13PLT-3-1', 'lock-14R-13PLT-4-1', 'lock-14R-13PLT-5-1']
+            },
+            '12P': {
+                L: ['lock-14L-12PLT-1-2', 'lock-14L-12PLT-2-2', 'lock-14L-12PLT-3-2', 'lock-13L-14L-1', 'lock-13L-14L-2', 'lock-13L-14L-3', 'lock-12L-13L-1', 'lock-12L-13L-2', 'lock-12L-13L-3'],
+                R: ['lock-14R-12PLT-4-2', 'lock-14R-12PLT-5-2', 'lock-13R-14R-4', 'lock-13R-14R-5', 'lock-13R-14L-6', 'lock-13R-AUX-1-1', 'lock-13R-AUX-2-2', 'lock-13R-AUX-2-1', 'lock-13R-AUX-3-1', 'lock-13R-AUX-3-2', 'lock-12R-13R-4', 'lock-12R-13R-5', 'lock-12R-13R-6', 'lock-13R-AUX-4-1']
+            },
+            '11P': {
+                L: ['lock-11L-12L-1', 'lock-11L-12L-2', 'lock-12L-11PLT-1', 'lock-12L-11PLT-2'],
+                R: ['lock-11R-12R-3', 'lock-11R-12R-4', 'lock-12R-11PLT-3', 'lock-12R-11PLT-4', 'lock-12R-11PLT-5'],
+                 },
+                 // AFT DQP
+            '42P': { L: [], R: [] }, '41P': { L: [], R: [] }, '32P': { L: [], R: [] }, '31P': { L: [], R: [] }
+            
+        };
+        // 4. パレット搭載時のロック無効化 (単純なもの)
+        const palletLockMap = {
+             '42P': { 
+                 'A': ['lock-42L-43L-1', 'lock-42L-43L-2', 'lock-42R-43R-3', 'lock-42R-43R-4'],
+                 'M': ['lock-42L-43L-1', 'lock-42L-43L-2', 'lock-42R-43R-3', 'lock-42R-43R-4', 'lock-42L-PLT-1-1', 'lock-42L-PLT-2-1', 'lock-42R-PLT-3-1', 'lock-42R-PLT-4-1', 'lock-42R-PLT-5-1']
+             },
+             '41P': {
+                 'A': ['lock-33L-41L-1-1', 'lock-33L-41L-2-1', 'lock-33L-41L-3-1', 'lock-33R-41R-4-1', 'lock-33R-41R-5-1', 'lock-33R-41R-6-1', 'lock-33L-41L-1-2', 'lock-33L-41L-2-2', 'lock-33L-41L-3-2', 'lock-33R-41R-4-2', 'lock-33R-41R-5-2', 'lock-33R-41R-6-2', 'lock-41L-42L-1-1', 'lock-41L-42L-2-1', 'lock-41L-42L-3-1', 'lock-41R-42R-4-1', 'lock-41R-42R-5-1', 'lock-41R-42R-6-1', 'lock-41L-42L-1-2', 'lock-41L-42L-2-2', 'lock-41L-42L-3-2', 'lock-41R-42R-4-2', 'lock-41R-42R-5-2', 'lock-41R-42R-6-2', 'lock-41C-1-1', 'lock-41C-1-2', 'lock-41C-2-1', 'lock-41C-2-2', 'lock-41C-3-1', 'lock-41C-3-2']
+             },
+             '31P': {
+                 'A': ['lock-31L-32L-1', 'lock-31L-32L-2', 'lock-31R-32R-3', 'lock-31R-32R-4'],
+                 'M': ['lock-31L-32L-1', 'lock-31L-32L-2', 'lock-31R-32R-3', 'lock-31R-32R-4', 'lock-32L-PLT-1-1', 'lock-32L-PLT-2-1', 'lock-32R-PLT-3-1', 'lock-32R-PLT-4-1', 'lock-32R-PLT-5-1']
+             }
+        };
+for (const [pos, locks] of Object.entries(kSizeDisableMap)) {
+            if (getSize(pos) === 'K') locks.forEach(id => activeLocks.delete(id));
+        }
+    
+        for (const [pos, locks] of Object.entries(qSizeDisableMap)) {
+            if (getSize(pos) === 'Q' && !loadedPositions.get(pos)?.isDQP) {
+                locks.forEach(id => activeLocks.delete(id));
+            }
+        }
+        for (const [palletName, locksObj] of Object.entries(dqpLockMap)) {
+            const count = dqpCounts[palletName] || 0;
+            if (count >= 1 && locksObj.L) locksObj.L.forEach(id => activeLocks.delete(id));
+            if (count >= 2 && locksObj.R) locksObj.R.forEach(id => activeLocks.delete(id));
+        }
+// パレット単純マップ適用
+        for (const [pos, typeMap] of Object.entries(palletLockMap)) {
+            const size = getSize(pos);
+            if (size === 'A' || size === 'M') {
+                const locks = typeMap[size];
+                if (locks) locks.forEach(id => activeLocks.delete(id));
+            }
+        }
+        if (isFwdLoaded) {
+            // ★★★ 22P / 21P のパレットロック制御 (詳細分岐) ★★★
+            if (loadedPositions.has('22P') && loadedPositions.get('22P').isPallet) {
+                const size22 = getSize('22P');
+                if (size22 === 'M') {
+                    ['lock-23L-24L-1', 'lock-23L-24L-2', 'lock-23R-24R-3', 'lock-23R-24R-4', 'lock-23L-PLT-1-1', 'lock-23L-PLT-2-1', 'lock-23R-PLT-3-1', 'lock-23R-PLT-4-1', 'lock-23R-PLT-5-1'].forEach(id => activeLocks.delete(id));
+                } else if (size22 === 'A') {
+                    ['lock-23L-24L-1', 'lock-23L-24L-2', 'lock-23R-24R-3', 'lock-23R-24R-4'].forEach(id => activeLocks.delete(id));
+                }
+
+                if (!has21LR) {
+                    const size21 = getSize('21P');
+                    if (size22 === 'M' && size21 === 'M' && patternKey_21P === 'M_P1') {
+                        ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4', 'lock-21L-22L-1', 'lock-21L-22L-2', 'lock-21R-22R-3', 'lock-21R-22R-4'].forEach(id => activeLocks.delete(id));
+                    } else if (size22 === 'A' && size21 === 'M') {
+                        ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+                    } else if (size22 === 'A' && size21 === 'A') {
+                        ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+                    } else if (size22 === 'M' && size21 === 'A') {
+                        ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+                    }
+                }
+            } else if (!loadedPositions.has('22P') && loadedPositions.get('21P')?.isPallet && getSize('21P') === 'M' && !has21LR) {
+                ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4', 'lock-23L-PLT-1-2', 'lock-23L-PLT-2-2', 'lock-23R-PLT-3-2', 'lock-23R-PLT-4-2', 'lock-23R-PLT-5-2'].forEach(id => activeLocks.delete(id));
+            }
+
+            if (has21LR && loadedPositions.has('22P') && loadedPositions.get('22P').isPallet) {
+                const size22 = getSize('22P');
+                const size21 = getSize('21P');
+                if (size22 === 'A' && size21 === 'M') {
+                    ['lock-23L-PLT-1-2', 'lock-23L-PLT-2-2', 'lock-23R-PLT-3-2', 'lock-23R-PLT-4-2', 'lock-23R-PLT-5-2', 'lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+                } else if (size22 === 'M' && size21 === 'A') {
+                    ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+                } else if (size22 === 'A' && size21 === 'A') {
+                    ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+                }
+            } else if (!loadedPositions.has('22P') && loadedPositions.get('21P')?.isPallet && getSize('21P') === 'M' && has21LR) {
+                 ['lock-23L-PLT-1-2', 'lock-23L-PLT-2-2', 'lock-23R-PLT-3-2', 'lock-23R-PLT-4-2', 'lock-23R-PLT-5-2', 'lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+            }
+
+            if (!loadedPositions.has('22P') && loadedPositions.get('21P')?.isPallet && getSize('21P') === 'A') {
+                ['lock-22L-23L-1', 'lock-22L-23L-2', 'lock-22R-23R-3', 'lock-22R-23R-4'].forEach(id => activeLocks.delete(id));
+            }
+
+            
+            // ★★★ 13P 専用ロジック (追加) ★★★
+            if (loadedPositions.has('13P') && loadedPositions.get('13P').isPallet) {
+                const size13 = getSize('13P');
+                if (size13 === 'A') {
+                    // PAGの場合
+                    ['lock-14L-21L-1', 'lock-14L-21L-2', 'lock-14R-21R-3', 'lock-14R-21R-4'].forEach(id => activeLocks.delete(id));
+                } else if (size13 === 'M') {
+                    // PMCの場合 (P3, P4 共通の無効化)
+                    ['lock-14L-21L-1', 'lock-14L-21L-2', 'lock-14R-21R-3', 'lock-14R-21R-4', 
+                     'lock-23L-21PLT-1', 'lock-23L-21PLT-2', 
+                     'lock-23R-21PLT-3', 'lock-23R-21PLT-4', 'lock-23R-21PLT-5'].forEach(id => activeLocks.delete(id));
+                     
+                    // P3の場合のみ追加で無効化 (patternKey_13P はステップ4.2で保存したもの)
+                    if (patternKey_13P === 'M_P3') {
+                        ['lock-14L-13PLT-1-1', 'lock-14L-13PLT-2-1', 
+                         'lock-14R-13PLT-3-1', 'lock-14R-13PLT-4-1', 'lock-14R-13PLT-5-1'].forEach(id => activeLocks.delete(id));
+                    }
+                }
+            }
+// ★★★ 12P 専用ロジック (更新) ★★★
+        if (loadedPositions.has('12P') && loadedPositions.get('12P').isPallet) {
+                const size12 = getSize('12P');
+                if (size12 === 'M') {
+                    ['lock-12L-13L-1', 'lock-12L-13L-2', 'lock-12L-13L-3', 'lock-12R-13R-4', 'lock-12R-13R-5', 'lock-12R-13R-6', 
+                     'lock-13L-14L-1', 'lock-13L-14L-2', 'lock-13L-14L-3', 'lock-13R-14R-4', 'lock-13R-14R-5', 'lock-13R-14L-6',
+                     'lock-14L-12PLT-1-2', 'lock-14L-12PLT-2-2', 'lock-14L-12PLT-3-2', 'lock-14R-12PLT-4-2', 'lock-14R-12PLT-5-2',
+                     'lock-13C-1-1', 'lock-13C-1-2', 'lock-13C-2-1', 'lock-13C-2-2', 'lock-13C-3-1', 'lock-13C-3-2',
+                     'lock-13R-AUX-1-1', 'lock-13R-AUX-2-1', 'lock-13R-AUX-2-2', 'lock-13R-AUX-3-1', 'lock-13R-AUX-3-2', 'lock-13R-AUX-4-1'].forEach(id => activeLocks.delete(id));
+                } else if (size12 === 'A') {
+                    ['lock-12L-13L-1', 'lock-12L-13L-2', 'lock-12L-13L-3', 'lock-12R-13R-4', 'lock-12R-13R-5', 'lock-12R-13R-6', 
+                     'lock-13L-14L-1', 'lock-13L-14L-2', 'lock-13L-14L-3', 'lock-13R-14R-4', 'lock-13R-14R-5', 'lock-13R-14L-6',
+                     'lock-13C-1-1', 'lock-13C-1-2', 'lock-13C-2-1', 'lock-13C-2-2', 'lock-13C-3-1', 'lock-13C-3-2',
+                     'lock-13R-AUX-1-1', 'lock-13R-AUX-2-1', 'lock-13R-AUX-2-2', 'lock-13R-AUX-3-1', 'lock-13R-AUX-3-2', 'lock-13R-AUX-4-1'].forEach(id => activeLocks.delete(id));
+                }
+            }
+            
+            // ★★★ 11P 専用ロジック (更新) ★★★
+        if (loadedPositions.has('11P') && loadedPositions.get('11P').isPallet) {
+                const size11 = getSize('11P');
+                if (size11 === 'M') {
+                    ['lock-11L-12L-1', 'lock-11L-12L-2', 'lock-11R-12R-3', 'lock-11R-12R-4', 'lock-12L-11PLT-1',
+                     'lock-12L-11PLT-2', 'lock-12R-11PLT-3', 'lock-12R-11PLT-4', 'lock-12R-11PLT-5'].forEach(id => activeLocks.delete(id));
+                } else if (size11 === 'A') {
+                    ['lock-11L-12L-1', 'lock-11L-12L-2', 'lock-11R-12R-3', 'lock-11R-12R-4'].forEach(id => activeLocks.delete(id));
+                }
+            }
+            }
+
+        if (isAftLoaded) {
+            // AFTのロックロジック (変更なし)
+// ★★★ 31P/32P ロック制御 (AFT詳細) ★★★
+            if (loadedPositions.has('31P') && loadedPositions.get('31P').isPallet) {
+                 const size31 = getSize('31P');
+                 const size32 = getSize('32P');
+
+                 if (loadedPositions.has('32P')) {
+                     // 31P & 32P 両方あり
+                     if (size31 === 'M' && size32 === 'M') {
+                         ['lock-31L-32L-1', 'lock-31L-32L-2', 'lock-31R-32R-3', 'lock-31R-32R-4', 'lock-32L-PLT-1-1', 'lock-32L-PLT-2-1', 'lock-32R-PLT-3-1', 'lock-32R-PLT-4-1', 'lock-32R-PLT-5-1', 'lock-32L-33L-1', 'lock-32L-33L-2', 'lock-32R-33R-3', 'lock-32R-33R-4', 'lock-33L-41PLT-1', 'lock-33L-41PLT-2', 'lock-33L-41PLT-3', 'lock-33R-41PLT-4', 'lock-33R-41PLT-5', 'lock-33L-41L-1-1', 'lock-33L-41L-2-1', 'lock-33L-41L-3-1', 'lock-33R-41R-4-1', 'lock-33R-41R-5-1', 'lock-33R-41R-6-1', 'lock-41C-3-1'].forEach(id => activeLocks.delete(id));
+                     } else if (size31 === 'A' && size32 === 'M') {
+                         ['lock-31L-32L-1', 'lock-31L-32L-2', 'lock-31R-32R-3', 'lock-31R-32R-4', 'lock-32L-PLT-1-2', 'lock-32L-PLT-2-2', 'lock-32R-PLT-3-2', 'lock-32R-PLT-4-2', 'lock-32R-PLT-5-2', 'lock-32L-33L-1', 'lock-32L-33L-2', 'lock-32R-33R-3', 'lock-32R-33R-4', 'lock-33L-41PLT-1', 'lock-33L-41PLT-2', 'lock-33L-41PLT-3', 'lock-33R-41PLT-4', 'lock-33R-41PLT-5',].forEach(id => activeLocks.delete(id));
+                     } else if (size31 === 'A' && size32 === 'A') {
+                         ['lock-31L-32L-1', 'lock-31L-32L-2', 'lock-31R-32R-3', 'lock-31R-32R-4', 'lock-32L-33L-1', 'lock-32L-33L-2', 'lock-32R-33R-3', 'lock-32R-33R-4'].forEach(id => activeLocks.delete(id));
+                     } else if (size31 === 'M' && size32 === 'A') {
+                         ['lock-31L-32L-1', 'lock-31L-32L-2', 'lock-31R-32R-3', 'lock-31R-32R-4', 'lock-32L-PLT-1-1', 'lock-32L-PLT-2-1', 'lock-32R-PLT-3-1', 'lock-32R-PLT-4-1', 'lock-32R-PLT-5-1', 'lock-32L-33L-1', 'lock-32L-33L-2', 'lock-32R-33R-3', 'lock-32R-33R-4', 'lock-33L-41PLT-1', 'lock-33L-41PLT-2', 'lock-33L-41PLT-3', 'lock-33R-41PLT-4', 'lock-33R-41PLT-5'].forEach(id => activeLocks.delete(id));
+                     }
+                 } 
+            }
+            
+            // 32P P8 と 41L/R Kサイズ
+            if (loadedPositions.has('32P') && getSize('32P') === 'M') {
+                 if ((loadedPositions.has('41L') && getSize('41L') === 'K') || (loadedPositions.has('41R') && getSize('41R') === 'K')) {
+                     ['lock-41L-42L-1-1', 'lock-41L-42L-2-1', 'lock-41L-42L-3-1', 'lock-41R-42R-4-1', 'lock-41R-42R-5-1', 'lock-41R-42R-6-1'].forEach(id => activeLocks.delete(id));
+                 }
+            }
+        }
+        allLockElements.forEach(lock => {
+            if (activeLocks.has(lock.id)) {
+                lock.classList.remove('disabled');
+                const currentState = lock.dataset.status || 'unlocked';
+                setLockState(lock, currentState);
+            } else {
+                lock.classList.add('disabled');
+                setLockState(lock, 'unlocked');
+            }
+        });
+    }
+
+        // --- (中略: 他ヘルパー関数... は変更なし) ---
+        function getDocumentId() {
+            const flightName = document.getElementById('flightName').value.trim().toUpperCase() || 'NO_FLIGHT';
+            const dateValue = document.getElementById('checkDate').value || new Date().toISOString().slice(0, 10);
+            return `${dateValue}_${flightName}`;
+        }
+        async function loadData() {
+            if (WEB_APP_URL.includes('YOUR_WEB_APP_URL_HERE')) {
+                document.getElementById('connection-status').textContent = 'ウェブアプリのURLを設定してください'; return;
+            }
+            document.getElementById('connection-status').textContent = 'データをロード中...';
+            try {
+                const response = await fetch(`${WEB_APP_URL}?docId=${getDocumentId()}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                if (data && Object.keys(data).length > 0) {
+                    updateUI(data);
+                    document.getElementById('connection-status').textContent = 'サーバーと同期済み';
+                } else {
+                    resetUI();
+                    document.getElementById('connection-status').textContent = 'サーバーにデータがありません';
+                }
+            } catch (error) {
+                console.error('データの読み込みに失敗:', error);
+                document.getElementById('connection-status').textContent = 'サーバー接続エラー';
+                resetUI();
+            }
+        }
+        async function saveState() {
+            if (WEB_APP_URL.includes('YOUR_WEB_APP_URL_HERE')) return;
+            document.getElementById('connection-status').textContent = 'サーバーへ保存中...';
+            const lockStates = {};
+            document.querySelectorAll('.lock-item:not(.disabled)').forEach(lock => lockStates[lock.id] = lock.dataset.status);
+            const stateToSave = {
+                shipNumber: document.getElementById('shipNumber').value, lm: document.getElementById('lm').value,
+                fwdLoadingStaff: document.getElementById('fwdLoadingStaff').value, fwdWcStaff: document.getElementById('fwdWcStaff').value,
+                aftLoadingStaff: document.getElementById('aftLoadingStaff').value, aftWcStaff: document.getElementById('aftWcStaff').value,
+                loadingInstructions: document.getElementById('loadingInstructions').value, locks: lockStates
+            };
+            try {
+                await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ docId: getDocumentId(), state: stateToSave }) });
+                document.getElementById('connection-status').textContent = '保存完了';
+            } catch (error) {
+                console.error('データの保存に失敗:', error);
+                document.getElementById('connection-status').textContent = '保存エラー';
+            }
+        }
+        function updateUI(data) {
+            ['shipNumber', 'lm', 'fwdLoadingStaff', 'fwdWcStaff', 'aftLoadingStaff', 'aftWcStaff', 'loadingInstructions'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = data[id] || '';
+            });
+            parseInstructionsAndApplyPattern();
+            if (data.locks) {
+                for (const lockId in data.locks) {
+                    const lockElement = document.getElementById(lockId);
+                    if (lockElement && !lockElement.classList.contains('disabled')) {
+                        setLockState(lockElement, data.locks[lockId]);
+                    }
+                }
+            }
+        }
+        function resetUI() {
+            ['shipNumber', 'lm', 'fwdLoadingStaff', 'fwdWcStaff', 'aftLoadingStaff', 'aftWcStaff', 'loadingInstructions'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            parseInstructionsAndApplyPattern();
+        }
+        function toggleLockState(lockElement) {
+            if (lockElement.classList.contains('disabled')) return;
+            const newStatus = lockElement.dataset.status === 'unlocked' ? 'locked' : 'unlocked';
+            setLockState(lockElement, newStatus);
+            document.getElementById('connection-status').textContent = '未保存の変更があります';
+        }
+        function extractInfoFromInstructions() {
+            const text = document.getElementById('loadingInstructions').value;
+            const fltMatch = text.match(/NH[^\/\s]+/);
+            if (fltMatch && !document.getElementById('flightName').value) {
+                document.getElementById('flightName').value = fltMatch[0];
+            }
+            const shipMatch = text.match(/JA\w+/);
+            if (shipMatch && !document.getElementById('shipNumber').value) {
+                document.getElementById('shipNumber').value = shipMatch[0];
+            }
+        }
+        function applyTextToSVG(textElement, content) {
+            textElement.textContent = '';
+            const x = textElement.getAttribute('x');
+            const lineHeight = 12;
+            const maxCharsPerLine = 10;
+            let lines = [];
+            for (let i = 0; i < content.length; i += maxCharsPerLine) lines.push(content.substring(i, i + maxCharsPerLine));
+            lines.forEach((line, index) => {
+                const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                tspan.setAttribute('x', x);
+                tspan.setAttribute('dy', index === 0 ? '0' : `${lineHeight}px`);
+                tspan.textContent = line;
+                textElement.appendChild(tspan);
+            });
+        }
+        function setLockState(lockElement, state) {
+            const color = (state === 'locked') ? LOCKED_COLOR : UNLOCKED_COLOR;
+            lockElement.setAttribute('fill', color);
+            lockElement.setAttribute('stroke', color);
+            lockElement.dataset.status = state;
+        }
+    </script>
+</body>
+
+</html>
