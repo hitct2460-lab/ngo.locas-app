@@ -122,6 +122,57 @@
 
    </div>
     <script>
+     // ▼▼▼ ここからスプレッドシート連携用コード ▼▼▼
+    
+    // 【重要】GASで発行した「ウェブアプリのURL」を下の""の中に貼り付けてください
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyx5SSQtXpsoPuC1OlseMWVSDVmNKOqLisN9UKx1DhJKHwP28-MZOTzVS8hVDdAcLqj/exec";
+
+    async function fetchNews() {
+      const listElement = document.getElementById('news-list');
+      
+      try {
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
+        
+        // ローディング表示を消す
+        listElement.innerHTML = '';
+
+        // データが空の場合
+        if (data.length === 0) {
+          listElement.innerHTML = '<li class="text-sm text-slate-400 text-center">お知らせはありません</li>';
+          return;
+        }
+
+        // データを1つずつリストに追加
+        data.forEach(item => {
+          // NEWマーク（item.isNewがtrue、つまりチェックが入っていれば表示）
+          const newBadge = item.isNew 
+            ? '<span class="text-xs font-bold bg-blue-100 text-blue-600 px-2 py-0.5 rounded">NEW</span>' 
+            : '';
+
+          // リストアイテムのHTMLを作成
+          const li = document.createElement('li');
+          li.className = "text-sm text-slate-600 pb-3 border-b border-slate-100 last:border-0";
+          li.innerHTML = `
+            <div class="flex items-center gap-2 mb-1">
+              ${newBadge}
+              <span class="text-xs text-slate-400">${item.date}</span>
+            </div>
+            <p>${item.content}</p>
+          `;
+          listElement.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error('Error:', error);
+        listElement.innerHTML = '<li class="text-sm text-red-400 text-center">読み込みに失敗しました</li>';
+      }
+    }
+
+    // ページ読み込み時にお知らせを取得
+    fetchNews();
+    // ▲▲▲ スプレッドシート連携用コードここまで ▲▲▲
+     // 1つ目のプルダウン LOCASを機種選択することによって起動するための処理
      // 1つ目のプルダウン LOCASを機種選択することによって起動するための処理
      document.getElementById('aircraft-select').addEventListener('change', function() {
      const selectedValue = this.value;
@@ -146,4 +197,5 @@
 
 </body>
 </html>
+
 
